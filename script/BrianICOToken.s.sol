@@ -11,6 +11,7 @@ contract BrianICOTokenScript is BaseScript {
         broadcast();
 
         brianICOToken = new BrianICOToken(1000000000000000000000000);
+        saveDeployment("BrianICOToken", address(brianICOToken));
 
         vm.stopBroadcast();
     }

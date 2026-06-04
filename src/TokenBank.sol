@@ -3,6 +3,7 @@ pragma solidity ^0.8.26;
 
 import {IERC1363Receiver} from "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
 
 contract TokenBank is IERC1363Receiver {
     // 记录每个用户在每种代币上的存款金额: user => token => amount
@@ -28,6 +29,54 @@ contract TokenBank is IERC1363Receiver {
 
         // 必须返回此 magic value 以确认接收
         return IERC1363Receiver.onTransferReceived.selector;
+    }
+
+    /// @notice 直接存入代币（需先 approve 本合约）
+    /// @dev 与 transferAndCall / ERC1363 方式互为补充
+    /// @param token 代币合约地址
+    /// @param amount 存入数量
+    function deposit(address token, uint256 amount) external {
+        require(amount > 0, "TokenBank: amount must be > 0");
+        require(
+            IERC20(token).transferFrom(msg.sender, address(this), amount),
+            "TokenBank: transferFrom failed"
+        );
+        deposits[msg.sender][token] += amount;
+        emit Deposited(token, msg.sender, amount);
+    }
+
+    /// @notice 离线签名授权后存入代币（EIP-2612 permit + deposit 一步完成）
+    /// @dev 用户链下签名 permit，任意中继者（relayer）即可代付 gas 上链
+    /// @param owner   代币持有者（签名方）
+    /// @param token   代币合约地址（需支持 IERC20Permit）
+    /// @param amount  存入数量
+    /// @param deadline 签名截止时间（unix timestamp）
+    /// @param v        permit 签名的 v
+    /// @param r        permit 签名的 r
+    /// @param s        permit 签名的 s
+    function permitDeposit(
+        address owner,
+        address token,
+        uint256 amount,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external {
+        require(amount > 0, "TokenBank: amount must be > 0");
+
+        // 1. 执行 permit，使本合约获得 owner → address(this) 的 allowance
+        IERC20Permit(token).permit(owner, address(this), amount, deadline, v, r, s);
+
+        // 2. 从 owner 转账到本合约
+        require(
+            IERC20(token).transferFrom(owner, address(this), amount),
+            "TokenBank: transferFrom failed"
+        );
+
+        // 3. 记录存款
+        deposits[owner][token] += amount;
+        emit Deposited(token, owner, amount);
     }
 
     /// @notice 提取已存入的指定代币

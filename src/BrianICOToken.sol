@@ -3,9 +3,14 @@ pragma solidity ^0.8.26;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {ERC1363} from "@openzeppelin/contracts/token/ERC20/extensions/ERC1363.sol";
+import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
-contract BrianICOToken is ERC1363 {
-    constructor(uint256 initialSupply) ERC20("BrianICOToken", "BIT") {
+/// @notice BrianICOToken — ERC1363 + EIP-2612 permit 代币
+contract BrianICOToken is ERC1363, ERC20Permit {
+    constructor(uint256 initialSupply)
+        ERC20("BrianICOToken", "BIT")
+        ERC20Permit("BrianICOToken")
+    {
         _mint(msg.sender, initialSupply);
     }
 

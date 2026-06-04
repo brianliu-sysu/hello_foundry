@@ -1,0 +1,23 @@
+{
+    "name": "BrianNFT",
+    "description": "It is a private NFT belongs Brian",
+    "image": "bafybeib233ynka3n4xdtxawesq5rvvu2dtzlvhk4ca6ywhcgfx4fkj63ni",
+    "attribute": [
+        {
+            "trait_type": "Hair",
+            "value": "Grey"
+        },
+        {
+            "trait_type": "Drinks",
+            "value": "Coffee"
+        },
+        {
+            "trait_type": "Glasses",
+            "value": "Fiction"
+        },
+        {
+            "trait_type": "Earphone",
+            "value": "Headset"
+        }
+    ]
+}

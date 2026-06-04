@@ -15,13 +15,40 @@ contract TokenBankTest is Test {
 
     uint256 constant INITIAL_SUPPLY = 1_000_000 * 10 ** 18;
 
+    // ── EIP-2612 permit helpers ──
+    bytes32 private constant PERMIT_TYPEHASH =
+        keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
+
+    uint256 private alicePrivateKey = 0xA11CE;
+
     function setUp() public {
+        // 给 makeAddr("alice") 分配一个已知私钥，才能签名 permit
+        alice = vm.addr(alicePrivateKey);
+        vm.label(alice, "alice");
+
         // 部署 TokenBank
         bank = new TokenBank();
 
         // 部署 BrianICOToken，初始供应全部给 alice
         vm.prank(alice);
         token = new BrianICOToken(INITIAL_SUPPLY);
+    }
+
+    /// @dev 构建 EIP-712 permit 签名
+    function _signPermit(
+        uint256 signerPrivateKey,
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 nonce,
+        uint256 deadline
+    ) internal view returns (uint8 v, bytes32 r, bytes32 s) {
+        bytes32 domainSeparator = token.DOMAIN_SEPARATOR();
+        bytes32 structHash = keccak256(
+            abi.encode(PERMIT_TYPEHASH, owner, spender, value, nonce, deadline)
+        );
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
+        return vm.sign(signerPrivateKey, digest);
     }
 
     // =============================================================
@@ -248,5 +275,180 @@ contract TokenBankTest is Test {
         vm.prank(alice);
         vm.expectRevert();
         token.transferAndCall(bob, amount);
+    }
+
+    // =============================================================
+    // EIP-2612 permit on BrianICOToken
+    // =============================================================
+
+    function test_Permit_SetsAllowance() public {
+        uint256 amount = 500 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = token.nonces(alice);
+
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
+            alicePrivateKey, alice, address(bank), amount, nonce, deadline
+        );
+
+        // Anyone can call permit (alice herself in this case)
+        vm.prank(alice);
+        token.permit(alice, address(bank), amount, deadline, v, r, s);
+
+        assertEq(token.allowance(alice, address(bank)), amount);
+    }
+
+    function test_Permit_RevertWhenExpired() public {
+        uint256 amount = 100 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1;
+        uint256 nonce = token.nonces(alice);
+
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
+            alicePrivateKey, alice, address(bank), amount, nonce, deadline
+        );
+
+        // 快进到 deadline 之后
+        vm.warp(block.timestamp + 2);
+
+        vm.prank(alice);
+        vm.expectRevert(); // ERC20Permit: expired deadline
+        token.permit(alice, address(bank), amount, deadline, v, r, s);
+    }
+
+    function test_Permit_NonceIncrementsAfterUse() public {
+        uint256 amount = 100 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1 hours;
+
+        assertEq(token.nonces(alice), 0);
+
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
+            alicePrivateKey, alice, address(bank), amount, 0, deadline
+        );
+        vm.prank(alice);
+        token.permit(alice, address(bank), amount, deadline, v, r, s);
+
+        assertEq(token.nonces(alice), 1);
+    }
+
+    function test_Permit_DOMAIN_SEPARATOR() public view {
+        // 验证 DOMAIN_SEPARATOR 存在且非零
+        assertTrue(token.DOMAIN_SEPARATOR() != bytes32(0));
+    }
+
+    // =============================================================
+    // TokenBank permitDeposit
+    // =============================================================
+
+    function test_PermitDeposit_GaslessDeposit() public {
+        uint256 amount = 500 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = token.nonces(alice);
+
+        // alice 离线签名，授权 bank 花费她的 token
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
+            alicePrivateKey, alice, address(bank), amount, nonce, deadline
+        );
+
+        // 任何人（如 relayer）都可以代为提交
+        vm.prank(address(0x5E1a6e5eA1ab));
+        bank.permitDeposit(alice, address(token), amount, deadline, v, r, s);
+
+        // 验证：存款记录在 alice（owner）名下
+        assertEq(bank.deposits(alice, address(token)), amount);
+        assertEq(token.balanceOf(address(bank)), amount);
+    }
+
+    function test_PermitDeposit_RecordsUnderOwnerNotCaller() public {
+        uint256 amount = 300 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = token.nonces(alice);
+
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
+            alicePrivateKey, alice, address(bank), amount, nonce, deadline
+        );
+
+        // relayer 调用，但存款应归属 alice
+        vm.prank(bob);
+        bank.permitDeposit(alice, address(token), amount, deadline, v, r, s);
+
+        assertEq(bank.deposits(alice, address(token)), amount);
+        // bob 没有存款
+        assertEq(bank.deposits(bob, address(token)), 0);
+    }
+
+    function test_PermitDeposit_EmitsDepositedEvent() public {
+        uint256 amount = 200 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = token.nonces(alice);
+
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
+            alicePrivateKey, alice, address(bank), amount, nonce, deadline
+        );
+
+        vm.expectEmit(true, true, false, true);
+        emit TokenBank.Deposited(address(token), alice, amount);
+
+        bank.permitDeposit(alice, address(token), amount, deadline, v, r, s);
+    }
+
+    function test_PermitDeposit_RevertWhenAmountIsZero() public {
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = token.nonces(alice);
+
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
+            alicePrivateKey, alice, address(bank), 0, nonce, deadline
+        );
+
+        vm.expectRevert("TokenBank: amount must be > 0");
+        bank.permitDeposit(alice, address(token), 0, deadline, v, r, s);
+    }
+
+    function test_PermitDeposit_RevertWhenExpired() public {
+        uint256 amount = 100 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1;
+        uint256 nonce = token.nonces(alice);
+
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
+            alicePrivateKey, alice, address(bank), amount, nonce, deadline
+        );
+
+        vm.warp(block.timestamp + 2);
+
+        vm.expectRevert(); // ERC20Permit: expired deadline
+        bank.permitDeposit(alice, address(token), amount, deadline, v, r, s);
+    }
+
+    function test_PermitDeposit_MultiplePermits() public {
+        uint256 amount1 = 200 * 10 ** 18;
+        uint256 amount2 = 300 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1 hours;
+
+        // 第一笔
+        (uint8 v1, bytes32 r1, bytes32 s1) = _signPermit(
+            alicePrivateKey, alice, address(bank), amount1, 0, deadline
+        );
+        bank.permitDeposit(alice, address(token), amount1, deadline, v1, r1, s1);
+
+        // 第二笔（nonce 自动增加）
+        (uint8 v2, bytes32 r2, bytes32 s2) = _signPermit(
+            alicePrivateKey, alice, address(bank), amount2, 1, deadline
+        );
+        bank.permitDeposit(alice, address(token), amount2, deadline, v2, r2, s2);
+
+        assertEq(bank.deposits(alice, address(token)), amount1 + amount2);
+        assertEq(token.balanceOf(address(bank)), amount1 + amount2);
+    }
+
+    function testFuzz_PermitDeposit(uint256 amount) public {
+        amount = bound(amount, 1, INITIAL_SUPPLY);
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = token.nonces(alice);
+
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
+            alicePrivateKey, alice, address(bank), amount, nonce, deadline
+        );
+
+        bank.permitDeposit(alice, address(token), amount, deadline, v, r, s);
+
+        assertEq(bank.deposits(alice, address(token)), amount);
     }
 }

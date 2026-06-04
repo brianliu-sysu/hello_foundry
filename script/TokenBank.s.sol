@@ -11,6 +11,7 @@ contract TokenBankScript is BaseScript {
         broadcast();
 
         tokenBank = new TokenBank();
+        saveDeployment("TokenBank", address(tokenBank));
 
         vm.stopBroadcast();
     }

@@ -13,3 +13,8 @@ docs/
 
 # SnapShot
 .gas-snapshot
+
+# Frontend
+node_modules/
+dist/
+build/

@@ -6,7 +6,19 @@
       "Bash(forge script *)",
       "Bash(git rm *)",
       "Bash(git remote *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m 'Initial commit: hello_foundry project *)",
+      "Bash(git push *)",
+      "Bash(gh auth *)",
+      "Bash(GIT_SSH_COMMAND=\"ssh -o StrictHostKeyChecking=no\" git push -u origin main)",
+      "Bash(gh api *)",
+      "Bash(gh repo *)",
+      "Bash(git commit *)",
+      "Bash(git config *)",
+      "Bash(rm -rf TokenBank)",
+      "Bash(npm create *)",
+      "Bash(npm install *)",
+      "Bash(npm run *)"
     ]
   }
 }
