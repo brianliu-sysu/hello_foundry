@@ -14,6 +14,9 @@ docs/
 # SnapShot
 .gas-snapshot
 
+# Deploy artifacts (auto-generated)
+deploy/
+
 # Frontend
 node_modules/
 dist/
