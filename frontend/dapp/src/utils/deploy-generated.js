@@ -2,14 +2,14 @@
 // Generated from /Users/brianliu/work/ethereum/hello_foundry/deploy
 export const CONTRACTS = {
   "31337": {
-    "BrianICOToken": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
-    "BrianNFT": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-    "MemeFactory": "0x4A679253410272dd5232B3Ff7cF5dbB88f295319",
-    "MemeTokenImpl": "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
-    "NFTMarket": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
-    "TokenBank": "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d"
+    "BatchTransferDelegation": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+    "BrianICOToken": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    "MemeFactory": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "MemeTokenImpl": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+    "TokenBank": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
   },
   "11155111": {
+    "BatchTransferDelegation": "0x22a50bD3F4dd2010779eb565732D070d990FecD1",
     "BrianICOToken": "0x27474e49A8f44cc55b6fE5ae6F9e5Ff70879851c",
     "BrianNFT": "0x34998b14ECe6Cef497c413E027F952d0f8F6f8aC",
     "MemeFactory": "0xa39Df5E0B8E8B0d6c42a83aB7ed314eC63c53Dff",

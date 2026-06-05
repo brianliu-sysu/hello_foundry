@@ -49,6 +49,11 @@ export const CONTRACT_ADDRESSES = {
     // "11155111": "",
     // "1":        "",
   },
+  BatchTransferDelegation: {
+    // "31337":   "",
+    // "11155111": "",
+    // "1":        "",
+  },
 };
 
 // ── Permit2 单例地址（所有 EVM 链相同，一般不需要改） ──

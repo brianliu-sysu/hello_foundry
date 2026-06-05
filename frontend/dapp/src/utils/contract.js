@@ -140,6 +140,29 @@ export const BRIANFT_EXTRA_ABI = [
 ];
 
 // ────────────────────────────────────
+// BatchTransferDelegation ABI (EIP-7702)
+// ────────────────────────────────────
+export const BATCHTRANSFERDELEGATION_ABI = [
+  { type: "function", name: "batchTransfer", inputs: [
+    { name: "tokens", type: "address[]" },
+    { name: "recipients", type: "address[]" },
+    { name: "amounts", type: "uint256[]" },
+  ], outputs: [{ name: "results", type: "bool[]" }], stateMutability: "nonpayable" },
+  { type: "function", name: "batchTransferETH", inputs: [
+    { name: "recipients", type: "address[]" },
+    { name: "amounts", type: "uint256[]" },
+  ], outputs: [{ name: "results", type: "bool[]" }], stateMutability: "nonpayable" },
+  { type: "event", name: "BatchTransferExecuted", inputs: [
+    { name: "from", type: "address", indexed: true },
+    { name: "count", type: "uint256", indexed: false },
+  ], anonymous: false },
+  { type: "event", name: "BatchTransferETHExecuted", inputs: [
+    { name: "from", type: "address", indexed: true },
+    { name: "count", type: "uint256", indexed: false },
+  ], anonymous: false },
+];
+
+// ────────────────────────────────────
 // MemeFactory ABI
 // ────────────────────────────────────
 export const MEMEFACTORY_ABI = [
@@ -202,6 +225,7 @@ export const BRIANICOTOKEN_DEPLOYED   = mergeAddress("BrianICOToken");
 export const NFTMARKET_DEPLOYED        = mergeAddress("NFTMarket");
 export const BRIANFT_DEPLOYED          = mergeAddress("BrianNFT");
 export const MEMEFACTORY_DEPLOYED      = mergeAddress("MemeFactory");
+export const BATCHTRANSFERDELEGATION_DEPLOYED = mergeAddress("BatchTransferDelegation");
 
 // ────────────────────────────────────
 // Utilities

@@ -4,12 +4,14 @@ import WalletCard      from "./components/WalletCard";
 import TokenBankView   from "./views/TokenBankView";
 import NFTMarketView   from "./views/NFTMarketView";
 import MemeFactoryView from "./views/MemeFactoryView";
+import BatchTransferView from "./views/BatchTransferView";
 import "./App.css";
 
 const TABS = [
   { key: "tokenbank", label: "🏦 TokenBank" },
   { key: "nftmarket", label: "🏪 NFTMarket" },
   { key: "memefactory", label: "🏭 MemeFactory" },
+  { key: "batchtransfer", label: "💸 BatchTransfer" },
 ];
 
 export default function App() {
@@ -36,6 +38,7 @@ export default function App() {
       {activeTab === "tokenbank" && <TokenBankView signer={signer} account={account} chainId={chainId} />}
       {activeTab === "nftmarket" && <NFTMarketView signer={signer} account={account} chainId={chainId} />}
       {activeTab === "memefactory" && <MemeFactoryView signer={signer} account={account} chainId={chainId} />}
+      {activeTab === "batchtransfer" && <BatchTransferView signer={signer} account={account} chainId={chainId} />}
     </div>
   );
 }
