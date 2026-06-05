@@ -4,7 +4,64 @@ pragma solidity ^0.8.26;
 import {Test} from "forge-std/Test.sol";
 import {BrianICOToken} from "../src/BrianICOToken.sol";
 import {TokenBank} from "../src/TokenBank.sol";
+import {ISignatureTransfer} from "../src/ISignatureTransfer.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+// ── Minimal Permit2 mock for testing ──
+// Only implements permitTransferFrom with EIP-712 signature verification.
+contract MockPermit2 {
+    mapping(address user => mapping(uint256 nonce => bool used)) public nonceUsed;
+
+    // EIP-712 type: PermitTransferFrom(TokenPermissions permitted,uint256 nonce,uint256 deadline)
+    //                 TokenPermissions(address token,uint256 amount)
+    bytes32 private constant _PERMIT_TRANSFER_FROM_TYPEHASH = keccak256(
+        "PermitTransferFrom(TokenPermissions permitted,uint256 nonce,uint256 deadline)TokenPermissions(address token,uint256 amount)"
+    );
+
+    function permitTransferFrom(
+        ISignatureTransfer.PermitTransferFrom memory permit,
+        ISignatureTransfer.SignatureTransferDetails calldata transferDetails,
+        address owner,
+        bytes calldata signature
+    ) external {
+        require(block.timestamp <= permit.deadline, "Permit2: deadline expired");
+        require(!nonceUsed[owner][permit.nonce], "Permit2: nonce already used");
+
+        bytes32 domainSeparator = keccak256(abi.encode(
+            keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)"),
+            keccak256("Permit2"),
+            block.chainid,
+            address(this)
+        ));
+
+        bytes32 tokenPermissionsHash = keccak256(abi.encode(
+            keccak256("TokenPermissions(address token,uint256 amount)"),
+            permit.permitted.token,
+            permit.permitted.amount
+        ));
+
+        bytes32 structHash = keccak256(abi.encode(
+            _PERMIT_TRANSFER_FROM_TYPEHASH,
+            tokenPermissionsHash,
+            permit.nonce,
+            permit.deadline
+        ));
+
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
+
+        // Recover signer from 65-byte signature (r || s || v)
+        address recovered = ecrecover(digest, uint8(signature[64]), bytes32(signature[0:32]), bytes32(signature[32:64]));
+        require(recovered == owner && recovered != address(0), "Permit2: invalid signature");
+
+        nonceUsed[owner][permit.nonce] = true;
+
+        require(
+            IERC20(permit.permitted.token).transferFrom(owner, transferDetails.to, transferDetails.requestedAmount),
+            "Permit2: transferFrom failed"
+        );
+    }
+}
 
 contract TokenBankTest is Test {
     BrianICOToken public token;
@@ -14,6 +71,9 @@ contract TokenBankTest is Test {
     address public bob = makeAddr("bob");
 
     uint256 constant INITIAL_SUPPLY = 1_000_000 * 10 ** 18;
+
+    // Permit2 singleton address (same on all EVM chains)
+    address private constant PERMIT2_ADDRESS = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
 
     // ── EIP-2612 permit helpers ──
     bytes32 private constant PERMIT_TYPEHASH =
@@ -26,12 +86,21 @@ contract TokenBankTest is Test {
         alice = vm.addr(alicePrivateKey);
         vm.label(alice, "alice");
 
+        // 部署 MockPermit2 到 Permit2 单例地址
+        MockPermit2 mockPermit2 = new MockPermit2();
+        vm.etch(PERMIT2_ADDRESS, address(mockPermit2).code);
+        vm.label(PERMIT2_ADDRESS, "Permit2");
+
         // 部署 TokenBank
         bank = new TokenBank();
 
         // 部署 BrianICOToken，初始供应全部给 alice
         vm.prank(alice);
         token = new BrianICOToken(INITIAL_SUPPLY);
+
+        // alice 预先 approve Permit2 合约（Permit2 SignatureTransfer 的前置条件）
+        vm.prank(alice);
+        token.approve(PERMIT2_ADDRESS, type(uint256).max);
     }
 
     /// @dev 构建 EIP-712 permit 签名
@@ -49,6 +118,39 @@ contract TokenBankTest is Test {
         );
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
         return vm.sign(signerPrivateKey, digest);
+    }
+
+    /// @dev 构建 Permit2 PermitTransferFrom EIP-712 签名（返回 r||s||v 的 bytes）
+    function _signPermit2(
+        uint256 signerPrivateKey,
+        address tokenAddr,
+        uint256 amount,
+        uint256 nonce,
+        uint256 deadline
+    ) internal view returns (bytes memory signature) {
+        bytes32 domainSeparator = keccak256(abi.encode(
+            keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)"),
+            keccak256("Permit2"),
+            block.chainid,
+            PERMIT2_ADDRESS
+        ));
+
+        bytes32 tokenPermissionsHash = keccak256(abi.encode(
+            keccak256("TokenPermissions(address token,uint256 amount)"),
+            tokenAddr,
+            amount
+        ));
+
+        bytes32 structHash = keccak256(abi.encode(
+            keccak256("PermitTransferFrom(TokenPermissions permitted,uint256 nonce,uint256 deadline)TokenPermissions(address token,uint256 amount)"),
+            tokenPermissionsHash,
+            nonce,
+            deadline
+        ));
+
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(signerPrivateKey, digest);
+        signature = abi.encodePacked(r, s, v);
     }
 
     // =============================================================
@@ -448,6 +550,118 @@ contract TokenBankTest is Test {
         );
 
         bank.permitDeposit(alice, address(token), amount, deadline, v, r, s);
+
+        assertEq(bank.deposits(alice, address(token)), amount);
+    }
+
+    // =============================================================
+    // TokenBank depositPermit2 (Uniswap Permit2 SignatureTransfer)
+    // =============================================================
+
+    function test_DepositPermit2_Success() public {
+        uint256 amount = 500 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = 0;
+
+        bytes memory signature = _signPermit2(alicePrivateKey, address(token), amount, nonce, deadline);
+
+        // Anyone (relayer) can submit
+        vm.prank(address(0x5E1a6e5eA1ab));
+        bank.depositPermit2(alice, address(token), amount, nonce, deadline, signature);
+
+        assertEq(bank.deposits(alice, address(token)), amount);
+        assertEq(token.balanceOf(address(bank)), amount);
+    }
+
+    function test_DepositPermit2_RecordsUnderOwner() public {
+        uint256 amount = 300 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = 0;
+
+        bytes memory signature = _signPermit2(alicePrivateKey, address(token), amount, nonce, deadline);
+
+        // bob submits on alice's behalf — deposit should still record under alice
+        vm.prank(bob);
+        bank.depositPermit2(alice, address(token), amount, nonce, deadline, signature);
+
+        assertEq(bank.deposits(alice, address(token)), amount);
+        assertEq(bank.deposits(bob, address(token)), 0);
+    }
+
+    function test_DepositPermit2_EmitsEvent() public {
+        uint256 amount = 200 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = 0;
+
+        bytes memory signature = _signPermit2(alicePrivateKey, address(token), amount, nonce, deadline);
+
+        vm.expectEmit(true, true, false, true);
+        emit TokenBank.Deposited(address(token), alice, amount);
+
+        bank.depositPermit2(alice, address(token), amount, nonce, deadline, signature);
+    }
+
+    function test_DepositPermit2_RevertZeroAmount() public {
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = 0;
+
+        bytes memory signature = _signPermit2(alicePrivateKey, address(token), 0, nonce, deadline);
+
+        vm.expectRevert("TokenBank: amount must be > 0");
+        bank.depositPermit2(alice, address(token), 0, nonce, deadline, signature);
+    }
+
+    function test_DepositPermit2_RevertExpired() public {
+        uint256 amount = 100 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1;
+        uint256 nonce = 0;
+
+        bytes memory signature = _signPermit2(alicePrivateKey, address(token), amount, nonce, deadline);
+
+        vm.warp(block.timestamp + 2);
+
+        vm.expectRevert("Permit2: deadline expired");
+        bank.depositPermit2(alice, address(token), amount, nonce, deadline, signature);
+    }
+
+    function test_DepositPermit2_RevertNonceReuse() public {
+        uint256 amount = 100 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = 0;
+
+        bytes memory signature = _signPermit2(alicePrivateKey, address(token), amount, nonce, deadline);
+
+        // First use succeeds
+        bank.depositPermit2(alice, address(token), amount, nonce, deadline, signature);
+
+        // Second use with same nonce should fail
+        vm.expectRevert("Permit2: nonce already used");
+        bank.depositPermit2(alice, address(token), amount, nonce, deadline, signature);
+    }
+
+    function test_DepositPermit2_MultiplePermits() public {
+        uint256 amount1 = 200 * 10 ** 18;
+        uint256 amount2 = 300 * 10 ** 18;
+        uint256 deadline = block.timestamp + 1 hours;
+
+        bytes memory sig1 = _signPermit2(alicePrivateKey, address(token), amount1, 0, deadline);
+        bank.depositPermit2(alice, address(token), amount1, 0, deadline, sig1);
+
+        bytes memory sig2 = _signPermit2(alicePrivateKey, address(token), amount2, 1, deadline);
+        bank.depositPermit2(alice, address(token), amount2, 1, deadline, sig2);
+
+        assertEq(bank.deposits(alice, address(token)), amount1 + amount2);
+        assertEq(token.balanceOf(address(bank)), amount1 + amount2);
+    }
+
+    function testFuzz_DepositPermit2(uint256 amount) public {
+        amount = bound(amount, 1, INITIAL_SUPPLY);
+        uint256 deadline = block.timestamp + 1 hours;
+        uint256 nonce = 0;
+
+        bytes memory signature = _signPermit2(alicePrivateKey, address(token), amount, nonce, deadline);
+
+        bank.depositPermit2(alice, address(token), amount, nonce, deadline, signature);
 
         assertEq(bank.deposits(alice, address(token)), amount);
     }

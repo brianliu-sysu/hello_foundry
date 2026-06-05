@@ -4,8 +4,10 @@ pragma solidity ^0.8.26;
 import {IERC1363Receiver} from "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
+import {ISignatureTransfer} from "./ISignatureTransfer.sol";
 
 contract TokenBank is IERC1363Receiver {
+    address private constant PERMIT2 = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
     // 记录每个用户在每种代币上的存款金额: user => token => amount
     mapping(address => mapping(address => uint256)) public deposits;
 
@@ -75,6 +77,40 @@ contract TokenBank is IERC1363Receiver {
         );
 
         // 3. 记录存款
+        deposits[owner][token] += amount;
+        emit Deposited(token, owner, amount);
+    }
+
+    /// @notice Deposit tokens via Permit2 SignatureTransfer (gasless for users who have pre-approved Permit2)
+    /// @dev  User signs a PermitTransferFrom message off-chain. Anyone (relayer) submits it.
+    ///       Requires a one-time ERC20 approve of the Permit2 contract (type(uint256).max recommended).
+    /// @param owner     Token holder who signed the permit
+    /// @param token     ERC20 token address (must match the signed TokenPermissions.token)
+    /// @param amount    Amount to deposit (must be <= signed TokenPermissions.amount)
+    /// @param nonce     Permit2 nonce (unique value; unused bit in Permit2's bitmap)
+    /// @param deadline  Signature expiration (unix timestamp)
+    /// @param signature EIP-712 signature bytes
+    function depositPermit2(
+        address owner,
+        address token,
+        uint256 amount,
+        uint256 nonce,
+        uint256 deadline,
+        bytes calldata signature
+    ) external {
+        require(amount > 0, "TokenBank: amount must be > 0");
+
+        ISignatureTransfer.PermitTransferFrom memory permit = ISignatureTransfer.PermitTransferFrom({
+            permitted: ISignatureTransfer.TokenPermissions({token: token, amount: amount}),
+            nonce: nonce,
+            deadline: deadline
+        });
+
+        ISignatureTransfer.SignatureTransferDetails memory transferDetails = ISignatureTransfer
+            .SignatureTransferDetails({to: address(this), requestedAmount: amount});
+
+        ISignatureTransfer(PERMIT2).permitTransferFrom(permit, transferDetails, owner, signature);
+
         deposits[owner][token] += amount;
         emit Deposited(token, owner, amount);
     }

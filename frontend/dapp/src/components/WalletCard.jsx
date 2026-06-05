@@ -1,4 +1,5 @@
 import { formatEther } from "ethers";
+import AddressLabel from "./AddressLabel";
 
 export default function WalletCard({ account, chainId, ethBalance, connecting, onConnect, onDisconnect }) {
   const connected = !!account;
@@ -32,7 +33,11 @@ function InfoRow({ label, value, mono }) {
   return (
     <div className="info-row">
       <span className="info-label">{label}</span>
-      <span className="info-value" style={mono ? { fontFamily: "'SF Mono','Fira Code',monospace" } : {}}>{value}</span>
+      <span className="info-value" style={mono ? { fontFamily: "'SF Mono','Fira Code',monospace" } : {}}>
+        {mono && typeof value === "string" && value.startsWith("0x")
+          ? <AddressLabel address={value} mono />
+          : value}
+      </span>
     </div>
   );
 }

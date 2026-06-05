@@ -22,7 +22,7 @@ contract NFTMarketScript is BaseScript {
             "ipfs://",   // baseTokenURI
             0             // maxSupply（0 = 无上限）
         );
-        brianNft.safeMint(address(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266), "bafybeib233ynka3n4xdtxawesq5rvvu2dtzlvhk4ca6ywhcgfx4fkj63ni");
+        brianNft.safeMint(deployer, "bafybeib233ynka3n4xdtxawesq5rvvu2dtzlvhk4ca6ywhcgfx4fkj63ni");
         saveDeployment("BrianNFT", address(brianNft));
 
         // 2. 部署 BrianICOToken（初始供应 100 万 BIT）

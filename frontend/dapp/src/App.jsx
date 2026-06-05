@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { useWallet } from "./hooks/useWallet";
-import WalletCard    from "./components/WalletCard";
-import TokenBankView from "./views/TokenBankView";
-import NFTMarketView from "./views/NFTMarketView";
+import WalletCard      from "./components/WalletCard";
+import TokenBankView   from "./views/TokenBankView";
+import NFTMarketView   from "./views/NFTMarketView";
+import MemeFactoryView from "./views/MemeFactoryView";
 import "./App.css";
 
 const TABS = [
   { key: "tokenbank", label: "🏦 TokenBank" },
   { key: "nftmarket", label: "🏪 NFTMarket" },
+  { key: "memefactory", label: "🏭 MemeFactory" },
 ];
 
 export default function App() {
@@ -31,8 +33,9 @@ export default function App() {
       </div>
 
       {/* ── Active view ── */}
-      {activeTab === "tokenbank" && <TokenBankView signer={signer} account={account} />}
-      {activeTab === "nftmarket" && <NFTMarketView signer={signer} account={account} />}
+      {activeTab === "tokenbank" && <TokenBankView signer={signer} account={account} chainId={chainId} />}
+      {activeTab === "nftmarket" && <NFTMarketView signer={signer} account={account} chainId={chainId} />}
+      {activeTab === "memefactory" && <MemeFactoryView signer={signer} account={account} chainId={chainId} />}
     </div>
   );
 }

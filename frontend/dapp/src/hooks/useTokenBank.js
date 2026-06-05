@@ -25,7 +25,10 @@ export function useTokenBank(signer, bankAddress) {
       setTxStatus({ type: "success", message: `Confirmed in block ${receipt.blockNumber}.`, hash: receipt.hash, block: receipt.blockNumber, explorerUrl: explorerUrl(receipt) });
       if (onConfirmed) await onConfirmed();
     } catch (err) {
-      const msg = err.reason || err.message || String(err);
+      let msg = (err && (err.reason || err.message)) || String(err);
+      if (msg.includes("InvalidSigner") || msg.includes("0x815e1d64")) {
+        msg = "Permit2: Invalid signature. Make sure you signed the Permit2 message (not a different one). Try again.";
+      }
       setTxStatus({ type: "error", message: msg });
       throw err;
     } finally { setTxPending(false); }
@@ -53,7 +56,17 @@ export function useTokenBank(signer, bankAddress) {
       setTxStatus({ type: "pending", message: "Requesting EIP-2612 signature…" });
       const owner = await signer.getAddress();
       const token = new Contract(tokenAddr, ERC20_ABI, signer.provider);
-      const nonce = await token.nonces(owner);
+
+      let nonce;
+      try {
+        nonce = await token.nonces(owner);
+      } catch {
+        throw new Error(
+          "This token does not support EIP-2612 permit (nonces call failed). "
+          + "Redeploy the token with ERC20Permit, or use regular Deposit / Permit2 Deposit instead."
+        );
+      }
+
       const deadline = Math.floor(Date.now() / 1000) + 3600;
       const network = await signer.provider.getNetwork();
       const domain = { name: "BrianICOToken", version: "1", chainId: Number(network.chainId), verifyingContract: tokenAddr };
@@ -61,12 +74,87 @@ export function useTokenBank(signer, bankAddress) {
         { name: "owner", type: "address" }, { name: "spender", type: "address" },
         { name: "value", type: "uint256" }, { name: "nonce", type: "uint256" }, { name: "deadline", type: "uint256" },
       ]};
-      const value = { owner, spender: bankContract.target, value: amount, nonce, deadline };
+      const value = {
+        owner,
+        spender: bankContract.target,
+        value: "0x" + amount.toString(16),
+        nonce: "0x" + nonce.toString(16),
+        deadline: "0x" + deadline.toString(16),
+      };
       setTxStatus({ type: "pending", message: "Please sign the permit message in MetaMask…" });
       const signature = await signer.signTypedData(domain, types, value);
       setTxStatus({ type: "pending", message: "Signature collected — submitting…" });
       const sig = Signature.from(signature);
       await sendTx(() => bankContract.permitDeposit(owner, tokenAddr, amount, deadline, sig.v, sig.r, sig.s));
+    } catch (err) {
+      setTxStatus({ type: "error", message: err.reason || err.message || String(err) });
+      throw err;
+    } finally { setTxPending(false); }
+  }, [bankContract, signer, sendTx]);
+
+  // ── depositPermit2 (Uniswap Permit2 SignatureTransfer) ──
+  // Permit2 的 EIP-712 typehash 包含 address spender（隐含为 msg.sender = TokenBank）
+  // 签名用 eth_signTypedData_v3（可自定义 EIP712Domain 字段），不用 v4（会加 version/salt）
+  let _permit2Nonce = 0;
+  const depositPermit2 = useCallback(async (tokenAddr, amount, manualNonce) => {
+    if (!bankContract) { setTxStatus({ type: "error", message: "Invalid TokenBank address." }); return; }
+    if (!signer) { setTxStatus({ type: "error", message: "Wallet not connected." }); return; }
+    try {
+      setTxPending(true);
+      setTxStatus({ type: "pending", message: "Requesting Permit2 signature…" });
+      const owner = await signer.getAddress();
+      const network = await signer.provider.getNetwork();
+      const chainId = Number(network.chainId);
+      const deadline = Math.floor(Date.now() / 1000) + 3600;
+
+      const nonceNum = (manualNonce !== undefined && manualNonce !== "")
+        ? Number(manualNonce)
+        : _permit2Nonce++;
+
+      const spender = bankContract.target;
+
+      const permitPayload = JSON.stringify({
+        types: {
+          EIP712Domain: [
+            { name: "name", type: "string" },
+            { name: "chainId", type: "uint256" },
+            { name: "verifyingContract", type: "address" },
+          ],
+          PermitTransferFrom: [
+            { name: "permitted", type: "TokenPermissions" },
+            { name: "spender", type: "address" },
+            { name: "nonce", type: "uint256" },
+            { name: "deadline", type: "uint256" },
+          ],
+          TokenPermissions: [
+            { name: "token", type: "address" },
+            { name: "amount", type: "uint256" },
+          ],
+        },
+        domain: {
+          name: "Permit2",
+          chainId: chainId,
+          verifyingContract: "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+        },
+        primaryType: "PermitTransferFrom",
+        message: {
+          permitted: {
+            token: tokenAddr,
+            amount: "0x" + amount.toString(16),
+          },
+          spender: spender,
+          nonce: "0x" + nonceNum.toString(16),
+          deadline: "0x" + deadline.toString(16),
+        },
+      });
+
+      setTxStatus({ type: "pending", message: "Please sign the Permit2 message in MetaMask…" });
+      const signature = await signer.provider.send("eth_signTypedData_v3", [owner, permitPayload]);
+      setTxStatus({ type: "pending", message: "Signature collected — submitting…" });
+
+      await sendTx(() =>
+        bankContract.depositPermit2(owner, tokenAddr, amount, BigInt(nonceNum), BigInt(deadline), signature)
+      );
     } catch (err) {
       setTxStatus({ type: "error", message: err.reason || err.message || String(err) });
       throw err;
@@ -102,7 +190,7 @@ export function useTokenBank(signer, bankAddress) {
   return {
     bankContract, bankAddressOk,
     txStatus, txPending, clearTxStatus,
-    deposit, permitDeposit, withdraw,
+    deposit, permitDeposit, depositPermit2, withdraw,
     getTokenInfo, getAllowance,
   };
 }

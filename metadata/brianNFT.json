@@ -1,8 +1,8 @@
 {
     "name": "BrianNFT",
     "description": "It is a private NFT belongs Brian",
-    "image": "bafybeib233ynka3n4xdtxawesq5rvvu2dtzlvhk4ca6ywhcgfx4fkj63ni",
-    "attribute": [
+    "image": "ipfs://bafybeib233ynka3n4xdtxawesq5rvvu2dtzlvhk4ca6ywhcgfx4fkj63ni",
+    "attributes": [
         {
             "trait_type": "Hair",
             "value": "Grey"
