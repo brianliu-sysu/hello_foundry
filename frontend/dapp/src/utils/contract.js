@@ -131,12 +131,19 @@ export const ERC721_ABI = [
 ];
 
 // ────────────────────────────────────
-// BrianNFT ABI（铸造 + Owner）
+// BrianNFT ABI（铸造 + Owner + 供应量查询）
 // ────────────────────────────────────
 export const BRIANFT_EXTRA_ABI = [
   { type: "function", name: "safeMint", inputs: [
     { name: "to", type: "address" }, { name: "uri", type: "string" },
   ], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "safeMintBatch", inputs: [
+    { name: "recipients", type: "address[]" }, { name: "uris", type: "string[]" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "maxSupply", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "totalMinted", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "nextTokenId", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "owner", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
 ];
 
 // ────────────────────────────────────
@@ -159,6 +166,44 @@ export const BATCHTRANSFERDELEGATION_ABI = [
   { type: "event", name: "BatchTransferETHExecuted", inputs: [
     { name: "from", type: "address", indexed: true },
     { name: "count", type: "uint256", indexed: false },
+  ], anonymous: false },
+];
+
+// ────────────────────────────────────
+// Faucet ABI（ETH + Token 水龙头）
+// ────────────────────────────────────
+export const FAUCET_ABI = [
+  // Owner
+  { type: "function", name: "owner", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  { type: "function", name: "changeOwner", inputs: [{ name: "newOwner", type: "address" }], outputs: [], stateMutability: "nonpayable" },
+  // Pausable
+  { type: "function", name: "paused", inputs: [], outputs: [{ name: "", type: "bool" }], stateMutability: "view" },
+  { type: "function", name: "pause", inputs: [], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "unpause", inputs: [], outputs: [], stateMutability: "nonpayable" },
+  // ETH withdraw
+  { type: "function", name: "withdraw", inputs: [
+    { name: "_withdrawAmount", type: "uint256" }, { name: "_to", type: "address" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "lastWithdrawTime", inputs: [{ name: "", type: "address" }], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  // Token
+  { type: "function", name: "token", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  { type: "function", name: "MAX_TOKEN_WITHDRAW", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "setToken", inputs: [{ name: "_token", type: "address" }], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "withdrawToken", inputs: [{ name: "amount", type: "uint256" }], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "adminWithdrawToken", inputs: [], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "lastTokenWithdrawTime", inputs: [{ name: "", type: "address" }], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  // Events
+  { type: "event", name: "Withdrawal", inputs: [
+    { name: "to", type: "address", indexed: true }, { name: "amount", type: "uint256", indexed: false },
+  ], anonymous: false },
+  { type: "event", name: "Deposit", inputs: [
+    { name: "from", type: "address", indexed: true }, { name: "amount", type: "uint256", indexed: false },
+  ], anonymous: false },
+  { type: "event", name: "TokenWithdrawal", inputs: [
+    { name: "to", type: "address", indexed: true }, { name: "amount", type: "uint256", indexed: false },
+  ], anonymous: false },
+  { type: "event", name: "TokenDeposit", inputs: [
+    { name: "from", type: "address", indexed: true }, { name: "amount", type: "uint256", indexed: false },
   ], anonymous: false },
 ];
 
@@ -226,6 +271,7 @@ export const NFTMARKET_DEPLOYED        = mergeAddress("NFTMarket");
 export const BRIANFT_DEPLOYED          = mergeAddress("BrianNFT");
 export const MEMEFACTORY_DEPLOYED      = mergeAddress("MemeFactory");
 export const BATCHTRANSFERDELEGATION_DEPLOYED = mergeAddress("BatchTransferDelegation");
+export const FAUCET_DEPLOYED              = mergeAddress("Faucet");
 
 // ────────────────────────────────────
 // Utilities

@@ -28,7 +28,7 @@ export default function NFTMarketView({ signer, account, chainId }) {
   const [bitInfo,      setBITInfo]      = useState(null);
   const [loading,      setLoading]      = useState(false);
 
-  const { txStatus, txPending, clearTxStatus, list, buy, cancel, safeMint, getListingInfo, getBITInfo, loadMyNFTs } = useNFTMarket(signer, marketAddr);
+  const { txStatus, txPending, clearTxStatus, list, buy, cancel, getListingInfo, getBITInfo, loadMyNFTs } = useNFTMarket(signer, marketAddr);
 
   // 加载单个 NFT 信息（供 List/Buy/Cancel 使用）
   const refreshNft = useCallback(async (tid) => {
@@ -81,12 +81,6 @@ export default function NFTMarketView({ signer, account, chainId }) {
   const validToken = tokenId !== "" && !isNaN(Number(tokenId)) && Number(tokenId) >= 0 && Number.isInteger(Number(tokenId));
 
   const [listPrice, setListPrice] = useState("");
-
-  // ── Mint state ──
-  const DEFAULT_MINT_URI = "bafkreia5hk7ykthyjrqqyr4l5iahel3ifevvyhktwlcfaejx5uhr6zeydu";
-  const [mintTo, setMintTo] = useState(account || "");
-  const [mintUri, setMintUri] = useState("");
-  useEffect(() => { if (account && !mintTo) setMintTo(account); }, [account]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 点击 My NFTs 中的 NFT 时自动加载其 listing 信息
   const selectNFT = useCallback((tid) => {
@@ -230,23 +224,6 @@ export default function NFTMarketView({ signer, account, chainId }) {
         <TxStatus status={txStatus} />
       </div>
 
-      {/* ── Mint NFT ── */}
-      <div className="card">
-        <div className="card-header">🎨 Mint NFT</div>
-        <p style={{ color: "#94a3b8", fontSize: "0.8rem", marginBottom: "0.75rem" }}>
-          Mint a new NFT to any address. Only the NFT contract owner can mint.
-        </p>
-        <div className="form-group">
-          <label className="form-label">Recipient Address</label>
-          <input className="input" value={mintTo} onChange={e => setMintTo(e.target.value)} placeholder={account ? `Your wallet: ${account.slice(0,6)}…${account.slice(-4)}` : "0x…"} spellCheck={false} />
-        </div>
-        <div className="form-group">
-          <label className="form-label">URI (IPFS CID)</label>
-          <input className="input" value={mintUri} onChange={e => setMintUri(e.target.value)} placeholder={DEFAULT_MINT_URI} spellCheck={false} />
-        </div>
-        <button className="btn btn-primary" disabled={!nftAddr||!isAddress(nftAddr)||txPending} onClick={() => { const to = mintTo && isAddress(mintTo) ? mintTo : account; mkAction(safeMint)(nftAddr, to, mintUri || DEFAULT_MINT_URI); setMintUri(""); }}>{txPending ? "⏳ Minting…" : "🎨 Mint NFT"}</button>
-        <TxStatus status={txStatus} />
-      </div>
     </>
   );
 }

@@ -7,7 +7,7 @@ contract Token is Faucet {
 
     constructor(address payable _f) payable {
         faucet = Faucet(_f);
-        faucet.withdraw(0.000001 ether, payable(address(this)));
+        faucet.withdraw(0.01 ether, payable(address(this)));
     }
 
     function changeFaucetOwner(address _owner) public onlyOwner {

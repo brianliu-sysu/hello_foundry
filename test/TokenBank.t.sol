@@ -665,4 +665,64 @@ contract TokenBankTest is Test {
 
         assertEq(bank.deposits(alice, address(token)), amount);
     }
+
+    // =============================================================
+    // BrianICOToken — admin withdraw
+    // =============================================================
+
+    function test_AdminWithdrawETH_SendsETHToOwner() public {
+        // 向 token 合约转入 ETH（模拟误转入）
+        vm.deal(address(token), 5 ether);
+
+        uint256 ownerBefore = alice.balance;
+
+        vm.prank(alice);
+        token.adminWithdrawETH();
+
+        assertEq(address(token).balance, 0);
+        assertEq(alice.balance, ownerBefore + 5 ether);
+    }
+
+    function test_AdminWithdrawETH_RevertsWhenNotOwner() public {
+        vm.deal(address(token), 1 ether);
+
+        vm.prank(bob);
+        vm.expectRevert(); // OwnableUnauthorizedAccount
+        token.adminWithdrawETH();
+    }
+
+    function test_AdminWithdrawETH_RevertsWhenZeroBalance() public {
+        vm.prank(alice);
+        vm.expectRevert("No ETH to withdraw");
+        token.adminWithdrawETH();
+    }
+
+    function test_AdminWithdrawToken_RecoversERC20() public {
+        // 向 token 合约转入其他 ERC20 代币（模拟误转入 BIT 到自己）
+        vm.prank(alice);
+        token.transfer(address(token), 1000 * 10 ** 18);
+
+        uint256 ownerBefore = token.balanceOf(alice);
+
+        vm.prank(alice);
+        token.adminWithdrawToken(address(token));
+
+        assertEq(token.balanceOf(address(token)), 0);
+        assertEq(token.balanceOf(alice), ownerBefore + 1000 * 10 ** 18);
+    }
+
+    function test_AdminWithdrawToken_RevertsWhenNotOwner() public {
+        vm.prank(alice);
+        token.transfer(address(token), 100 * 10 ** 18);
+
+        vm.prank(bob);
+        vm.expectRevert(); // OwnableUnauthorizedAccount
+        token.adminWithdrawToken(address(token));
+    }
+
+    function test_AdminWithdrawToken_RevertsWhenZeroBalance() public {
+        vm.prank(alice);
+        vm.expectRevert("No tokens to withdraw");
+        token.adminWithdrawToken(address(token));
+    }
 }

@@ -12,14 +12,14 @@ contract TokenTest is Test {
     address public bob = makeAddr("bob");
 
     // Faucet.withdraw 单次上限
-    uint256 constant MAX_WITHDRAW = 1_000_000_000_000; // 0.000001 ether
+    uint256 constant MAX_WITHDRAW = 0.01 ether;
 
     function setUp() public {
         // 部署父 Faucet 并充值
         vm.deal(address(this), 10 ether);
         parentFaucet = new Faucet{value: 5 ether}();
 
-        // 部署 Token，构造器中会从 parentFaucet 提取 MAX_WITHDRAW (0.000001 ether)
+        // 部署 Token，构造器中会从 parentFaucet 提取 MAX_WITHDRAW (0.01 ether)
         token = new Token{value: 0}(payable(address(parentFaucet)));
 
         // 将 parentFaucet 的 owner 设为 Token 合约，这样 Token.changeFaucetOwner 才能工作

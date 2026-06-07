@@ -5,9 +5,13 @@ import TokenBankView   from "./views/TokenBankView";
 import NFTMarketView   from "./views/NFTMarketView";
 import MemeFactoryView from "./views/MemeFactoryView";
 import BatchTransferView from "./views/BatchTransferView";
+import NFTMintView     from "./views/NFTMintView";
+import FaucetView      from "./views/FaucetView";
 import "./App.css";
 
 const TABS = [
+  { key: "faucet",     label: "🚰 Faucet" },
+  { key: "nftmint",   label: "🎨 Mint NFT" },
   { key: "tokenbank", label: "🏦 TokenBank" },
   { key: "nftmarket", label: "🏪 NFTMarket" },
   { key: "memefactory", label: "🏭 MemeFactory" },
@@ -16,7 +20,7 @@ const TABS = [
 
 export default function App() {
   const { account, signer, chainId, ethBalance, connecting, connect, disconnect } = useWallet();
-  const [activeTab, setActiveTab] = useState("tokenbank");
+  const [activeTab, setActiveTab] = useState("faucet");
 
   return (
     <div className="container">
@@ -35,6 +39,8 @@ export default function App() {
       </div>
 
       {/* ── Active view ── */}
+      {activeTab === "faucet"     && <FaucetView      signer={signer} account={account} chainId={chainId} />}
+      {activeTab === "nftmint"   && <NFTMintView   signer={signer} account={account} chainId={chainId} />}
       {activeTab === "tokenbank" && <TokenBankView signer={signer} account={account} chainId={chainId} />}
       {activeTab === "nftmarket" && <NFTMarketView signer={signer} account={account} chainId={chainId} />}
       {activeTab === "memefactory" && <MemeFactoryView signer={signer} account={account} chainId={chainId} />}
