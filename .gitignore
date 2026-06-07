@@ -22,5 +22,3 @@ node_modules/
 dist/
 build/
 
-lib/openzeppelin-contracts-upgradeable/
-lib/openzeppelin-foundry-upgrades/
