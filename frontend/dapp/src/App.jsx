@@ -7,44 +7,54 @@ import MemeFactoryView from "./views/MemeFactoryView";
 import BatchTransferView from "./views/BatchTransferView";
 import NFTMintView     from "./views/NFTMintView";
 import FaucetView      from "./views/FaucetView";
+import UniswapV2View   from "./views/UniswapV2View";
 import "./App.css";
 
 const TABS = [
+  { key: "uniswap",    label: "🦄 Uniswap V2" },
   { key: "faucet",     label: "🚰 Faucet" },
-  { key: "nftmint",   label: "🎨 Mint NFT" },
-  { key: "tokenbank", label: "🏦 TokenBank" },
-  { key: "nftmarket", label: "🏪 NFTMarket" },
+  { key: "tokenbank",  label: "🏦 TokenBank" },
+  { key: "nftmarket",  label: "🏪 NFTMarket" },
+  { key: "nftmint",    label: "🎨 Mint NFT" },
   { key: "memefactory", label: "🏭 MemeFactory" },
   { key: "batchtransfer", label: "💸 BatchTransfer" },
 ];
 
 export default function App() {
   const { account, signer, chainId, ethBalance, connecting, connect, disconnect } = useWallet();
-  const [activeTab, setActiveTab] = useState("faucet");
+  const [activeTab, setActiveTab] = useState("uniswap");
 
   return (
     <div className="container">
-      <h1>⚡ DApp</h1>
-      <p className="subtitle">TokenBank + NFTMarket — one app, one wallet</p>
+      {/* ── Sidebar ── */}
+      <div className="sidebar">
+        <h1>⚡ DApp</h1>
+        <p className="subtitle">TokenBank + NFTMarket + Uniswap</p>
 
-      <WalletCard account={account} chainId={chainId} ethBalance={ethBalance} connecting={connecting} onConnect={connect} onDisconnect={disconnect} />
+        <WalletCard account={account} chainId={chainId} ethBalance={ethBalance}
+          connecting={connecting} onConnect={connect} onDisconnect={disconnect} />
 
-      {/* ── Tab bar ── */}
-      <div className="tabs">
-        {TABS.map(t => (
-          <button key={t.key} className={`tab ${activeTab === t.key ? "active" : ""}`} onClick={() => setActiveTab(t.key)}>
-            {t.label}
-          </button>
-        ))}
+        <nav className="sidebar-nav">
+          {TABS.map(t => (
+            <button key={t.key}
+              className={`sidebar-item ${activeTab === t.key ? "active" : ""}`}
+              onClick={() => setActiveTab(t.key)}>
+              {t.label}
+            </button>
+          ))}
+        </nav>
       </div>
 
-      {/* ── Active view ── */}
-      {activeTab === "faucet"     && <FaucetView      signer={signer} account={account} chainId={chainId} />}
-      {activeTab === "nftmint"   && <NFTMintView   signer={signer} account={account} chainId={chainId} />}
-      {activeTab === "tokenbank" && <TokenBankView signer={signer} account={account} chainId={chainId} />}
-      {activeTab === "nftmarket" && <NFTMarketView signer={signer} account={account} chainId={chainId} />}
-      {activeTab === "memefactory" && <MemeFactoryView signer={signer} account={account} chainId={chainId} />}
-      {activeTab === "batchtransfer" && <BatchTransferView signer={signer} account={account} chainId={chainId} />}
+      {/* ── Main content ── */}
+      <div className="main-content">
+        {activeTab === "faucet"     && <FaucetView      signer={signer} account={account} chainId={chainId} />}
+        {activeTab === "nftmint"   && <NFTMintView   signer={signer} account={account} chainId={chainId} />}
+        {activeTab === "tokenbank" && <TokenBankView signer={signer} account={account} chainId={chainId} />}
+        {activeTab === "nftmarket" && <NFTMarketView signer={signer} account={account} chainId={chainId} />}
+        {activeTab === "memefactory" && <MemeFactoryView signer={signer} account={account} chainId={chainId} />}
+        {activeTab === "batchtransfer" && <BatchTransferView signer={signer} account={account} chainId={chainId} />}
+        {activeTab === "uniswap"    && <UniswapV2View signer={signer} account={account} chainId={chainId} />}
+      </div>
     </div>
   );
 }

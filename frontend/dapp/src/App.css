@@ -1,17 +1,17 @@
 /* ============================================================
-   DApp — shared dark theme + tab navigation styles
+   DApp — shared dark theme styles
    ============================================================ */
 
-/* ── tabs ── */
+/* ── inline tabs (used inside cards for sub-navigation) ── */
 .tabs {
   display: flex;
   gap: 0;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
   border-bottom: 2px solid #334155;
 }
 .tab {
-  padding: 0.6rem 1.4rem;
-  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.825rem;
   font-weight: 600;
   color: #94a3b8;
   cursor: pointer;

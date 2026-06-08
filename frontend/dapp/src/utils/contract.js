@@ -235,6 +235,184 @@ export const MEMETOKEN_EXTRA_ABI = [
 ];
 
 // ────────────────────────────────────
+// UniswapV2Factory ABI
+// ────────────────────────────────────
+export const UNISWAPV2_FACTORY_ABI = [
+  { type: "function", name: "feeTo", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  { type: "function", name: "feeToSetter", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  { type: "function", name: "getPair", inputs: [
+    { name: "tokenA", type: "address" }, { name: "tokenB", type: "address" },
+  ], outputs: [{ name: "pair", type: "address" }], stateMutability: "view" },
+  { type: "function", name: "allPairs", inputs: [{ name: "", type: "uint256" }], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  { type: "function", name: "allPairsLength", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "createPair", inputs: [
+    { name: "tokenA", type: "address" }, { name: "tokenB", type: "address" },
+  ], outputs: [{ name: "pair", type: "address" }], stateMutability: "nonpayable" },
+  { type: "function", name: "pairCodeHash", inputs: [], outputs: [{ name: "", type: "bytes32" }], stateMutability: "view" },
+  { type: "event", name: "PairCreated", inputs: [
+    { name: "token0", type: "address", indexed: true },
+    { name: "token1", type: "address", indexed: true },
+    { name: "pair", type: "address", indexed: false },
+    { name: "", type: "uint256", indexed: false },
+  ], anonymous: false },
+];
+
+// ────────────────────────────────────
+// UniswapV2Pair ABI
+// ────────────────────────────────────
+export const UNISWAPV2_PAIR_ABI = [
+  { type: "function", name: "token0", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  { type: "function", name: "token1", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  { type: "function", name: "getReserves", inputs: [], outputs: [
+    { name: "reserve0", type: "uint112" }, { name: "reserve1", type: "uint112" },
+    { name: "blockTimestampLast", type: "uint32" },
+  ], stateMutability: "view" },
+  { type: "function", name: "totalSupply", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "balanceOf", inputs: [{ name: "", type: "address" }], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "allowance", inputs: [
+    { name: "", type: "address" }, { name: "", type: "address" },
+  ], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "approve", inputs: [
+    { name: "spender", type: "address" }, { name: "value", type: "uint256" },
+  ], outputs: [{ name: "", type: "bool" }], stateMutability: "nonpayable" },
+  { type: "function", name: "mint", inputs: [{ name: "to", type: "address" }], outputs: [{ name: "liquidity", type: "uint256" }], stateMutability: "nonpayable" },
+  { type: "function", name: "burn", inputs: [{ name: "to", type: "address" }], outputs: [
+    { name: "amount0", type: "uint256" }, { name: "amount1", type: "uint256" },
+  ], stateMutability: "nonpayable" },
+  { type: "function", name: "swap", inputs: [
+    { name: "amount0Out", type: "uint256" }, { name: "amount1Out", type: "uint256" },
+    { name: "to", type: "address" }, { name: "data", type: "bytes" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  { type: "event", name: "Mint", inputs: [
+    { name: "sender", type: "address", indexed: true },
+    { name: "amount0", type: "uint256", indexed: false },
+    { name: "amount1", type: "uint256", indexed: false },
+  ], anonymous: false },
+  { type: "event", name: "Burn", inputs: [
+    { name: "sender", type: "address", indexed: true },
+    { name: "amount0", type: "uint256", indexed: false },
+    { name: "amount1", type: "uint256", indexed: false },
+    { name: "to", type: "address", indexed: true },
+  ], anonymous: false },
+  { type: "event", name: "Swap", inputs: [
+    { name: "sender", type: "address", indexed: true },
+    { name: "amount0In", type: "uint256", indexed: false },
+    { name: "amount1In", type: "uint256", indexed: false },
+    { name: "amount0Out", type: "uint256", indexed: false },
+    { name: "amount1Out", type: "uint256", indexed: false },
+    { name: "to", type: "address", indexed: true },
+  ], anonymous: false },
+  { type: "event", name: "Sync", inputs: [
+    { name: "reserve0", type: "uint112", indexed: false },
+    { name: "reserve1", type: "uint112", indexed: false },
+  ], anonymous: false },
+  { type: "event", name: "Transfer", inputs: [
+    { name: "from", type: "address", indexed: true },
+    { name: "to", type: "address", indexed: true },
+    { name: "value", type: "uint256", indexed: false },
+  ], anonymous: false },
+  { type: "event", name: "Approval", inputs: [
+    { name: "owner", type: "address", indexed: true },
+    { name: "spender", type: "address", indexed: true },
+    { name: "value", type: "uint256", indexed: false },
+  ], anonymous: false },
+];
+
+// ────────────────────────────────────
+// UniswapV2Router02 ABI
+// ────────────────────────────────────
+export const UNISWAPV2_ROUTER_ABI = [
+  { type: "function", name: "factory", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  { type: "function", name: "WETH", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  // addLiquidity
+  { type: "function", name: "addLiquidity", inputs: [
+    { name: "tokenA", type: "address" }, { name: "tokenB", type: "address" },
+    { name: "amountADesired", type: "uint256" }, { name: "amountBDesired", type: "uint256" },
+    { name: "amountAMin", type: "uint256" }, { name: "amountBMin", type: "uint256" },
+    { name: "to", type: "address" }, { name: "deadline", type: "uint256" },
+  ], outputs: [
+    { name: "amountA", type: "uint256" }, { name: "amountB", type: "uint256" },
+    { name: "liquidity", type: "uint256" },
+  ], stateMutability: "nonpayable" },
+  // addLiquidityETH
+  { type: "function", name: "addLiquidityETH", inputs: [
+    { name: "token", type: "address" },
+    { name: "amountTokenDesired", type: "uint256" }, { name: "amountTokenMin", type: "uint256" },
+    { name: "amountETHMin", type: "uint256" },
+    { name: "to", type: "address" }, { name: "deadline", type: "uint256" },
+  ], outputs: [
+    { name: "amountToken", type: "uint256" }, { name: "amountETH", type: "uint256" },
+    { name: "liquidity", type: "uint256" },
+  ], stateMutability: "payable" },
+  // removeLiquidity
+  { type: "function", name: "removeLiquidity", inputs: [
+    { name: "tokenA", type: "address" }, { name: "tokenB", type: "address" },
+    { name: "liquidity", type: "uint256" },
+    { name: "amountAMin", type: "uint256" }, { name: "amountBMin", type: "uint256" },
+    { name: "to", type: "address" }, { name: "deadline", type: "uint256" },
+  ], outputs: [
+    { name: "amountA", type: "uint256" }, { name: "amountB", type: "uint256" },
+  ], stateMutability: "nonpayable" },
+  // removeLiquidityETH
+  { type: "function", name: "removeLiquidityETH", inputs: [
+    { name: "token", type: "address" }, { name: "liquidity", type: "uint256" },
+    { name: "amountTokenMin", type: "uint256" }, { name: "amountETHMin", type: "uint256" },
+    { name: "to", type: "address" }, { name: "deadline", type: "uint256" },
+  ], outputs: [
+    { name: "amountToken", type: "uint256" }, { name: "amountETH", type: "uint256" },
+  ], stateMutability: "nonpayable" },
+  // swapExactTokensForTokens
+  { type: "function", name: "swapExactTokensForTokens", inputs: [
+    { name: "amountIn", type: "uint256" }, { name: "amountOutMin", type: "uint256" },
+    { name: "path", type: "address[]" }, { name: "to", type: "address" },
+    { name: "deadline", type: "uint256" },
+  ], outputs: [{ name: "amounts", type: "uint256[]" }], stateMutability: "nonpayable" },
+  // swapExactETHForTokens
+  { type: "function", name: "swapExactETHForTokens", inputs: [
+    { name: "amountOutMin", type: "uint256" }, { name: "path", type: "address[]" },
+    { name: "to", type: "address" }, { name: "deadline", type: "uint256" },
+  ], outputs: [{ name: "amounts", type: "uint256[]" }], stateMutability: "payable" },
+  // swapExactTokensForETH
+  { type: "function", name: "swapExactTokensForETH", inputs: [
+    { name: "amountIn", type: "uint256" }, { name: "amountOutMin", type: "uint256" },
+    { name: "path", type: "address[]" }, { name: "to", type: "address" },
+    { name: "deadline", type: "uint256" },
+  ], outputs: [{ name: "amounts", type: "uint256[]" }], stateMutability: "nonpayable" },
+  // quote / getAmountsOut / getAmountsIn
+  { type: "function", name: "quote", inputs: [
+    { name: "amountA", type: "uint256" }, { name: "reserveA", type: "uint256" }, { name: "reserveB", type: "uint256" },
+  ], outputs: [{ name: "amountB", type: "uint256" }], stateMutability: "pure" },
+  { type: "function", name: "getAmountOut", inputs: [
+    { name: "amountIn", type: "uint256" }, { name: "reserveIn", type: "uint256" }, { name: "reserveOut", type: "uint256" },
+  ], outputs: [{ name: "amountOut", type: "uint256" }], stateMutability: "pure" },
+  { type: "function", name: "getAmountsOut", inputs: [
+    { name: "amountIn", type: "uint256" }, { name: "path", type: "address[]" },
+  ], outputs: [{ name: "amounts", type: "uint256[]" }], stateMutability: "view" },
+];
+
+// ────────────────────────────────────
+// WETH9 ABI
+// ────────────────────────────────────
+export const WETH9_ABI = [
+  { type: "function", name: "deposit", inputs: [], outputs: [], stateMutability: "payable" },
+  { type: "function", name: "withdraw", inputs: [{ name: "wad", type: "uint256" }], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "balanceOf", inputs: [{ name: "", type: "address" }], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "approve", inputs: [
+    { name: "guy", type: "address" }, { name: "wad", type: "uint256" },
+  ], outputs: [{ name: "", type: "bool" }], stateMutability: "nonpayable" },
+  { type: "function", name: "allowance", inputs: [
+    { name: "", type: "address" }, { name: "", type: "address" },
+  ], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "transfer", inputs: [
+    { name: "dst", type: "address" }, { name: "wad", type: "uint256" },
+  ], outputs: [{ name: "", type: "bool" }], stateMutability: "nonpayable" },
+  { type: "function", name: "transferFrom", inputs: [
+    { name: "src", type: "address" }, { name: "dst", type: "address" }, { name: "wad", type: "uint256" },
+  ], outputs: [{ name: "", type: "bool" }], stateMutability: "nonpayable" },
+  { type: "function", name: "totalSupply", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+];
+
+// ────────────────────────────────────
 // Auto-generated deploy addresses (fallback)
 // ────────────────────────────────────
 import { CONTRACTS } from "./deploy-generated.js";
@@ -272,6 +450,9 @@ export const BRIANFT_DEPLOYED          = mergeAddress("BrianNFT");
 export const MEMEFACTORY_DEPLOYED      = mergeAddress("MemeFactory");
 export const BATCHTRANSFERDELEGATION_DEPLOYED = mergeAddress("BatchTransferDelegation");
 export const FAUCET_DEPLOYED              = mergeAddress("Faucet");
+export const UNISWAPV2_FACTORY_DEPLOYED   = mergeAddress("UniswapV2Factory");
+export const UNISWAPV2_ROUTER_DEPLOYED    = mergeAddress("UniswapV2Router02");
+export const WETH9_DEPLOYED               = mergeAddress("WETH9");
 
 // ────────────────────────────────────
 // Utilities
