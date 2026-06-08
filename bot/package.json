@@ -1,0 +1,16 @@
+{
+  "name": "flash-arbitrage-bot",
+  "version": "1.0.0",
+  "description": "Uniswap V2 arbitrage monitoring bot — scans pairs for price discrepancies and executes flash swap arbitrage",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "once": "node index.js --once"
+  },
+  "dependencies": {
+    "ethers": "^6.13.0",
+    "dotenv": "^16.4.0"
+  }
+}
