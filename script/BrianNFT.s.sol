@@ -11,10 +11,10 @@ contract BrianNFTScript is BaseScript {
         broadcast();
 
         brianNft = new BrianNFT(
-            "BrianNFT",                        // name
-            "BNFT",                            // symbol
-            "ipfs://",                         // baseTokenURI
-            10000                              // maxSupply（0 表示无上限）
+            "BrianNFT", // name
+            "BNFT", // symbol
+            "ipfs://", // baseTokenURI
+            10000 // maxSupply（0 表示无上限）
         );
         saveDeployment("BrianNFT", address(brianNft));
 

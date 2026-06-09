@@ -45,16 +45,16 @@ contract StakingPoolTest is Test {
 
         vm.prank(owner);
         market.initReserve(
-            address(weth),     // asset
-            7500,              // collateralFactor
-            8500,              // liquidationThreshold
-            10500,             // liquidationBonus
-            9,                 // flashLoanPremium
-            3000e8,            // price: $3000
-            0.8e27,            // optimalUtilizationRate
-            0.02e27,           // baseBorrowRate
-            0.06e27,           // slope1
-            3.0e27             // slope2
+            address(weth), // asset
+            7500, // collateralFactor
+            8500, // liquidationThreshold
+            10500, // liquidationBonus
+            9, // flashLoanPremium
+            3000e8, // price: $3000
+            0.8e27, // optimalUtilizationRate
+            0.02e27, // baseBorrowRate
+            0.06e27, // slope1
+            3.0e27 // slope2
         );
 
         // 4. Deploy StakingPool
@@ -96,7 +96,7 @@ contract StakingPoolTest is Test {
         assertEq(address(pool.lendingMarket()), address(market));
         assertEq(pool.owner(), owner);
         assertEq(pool.totalStaked(), 0);
-        assertEq(kk.owner(), address(pool));          // Ownership transferred
+        assertEq(kk.owner(), address(pool)); // Ownership transferred
     }
 
     // ======================================================================

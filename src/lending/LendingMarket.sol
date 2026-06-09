@@ -26,8 +26,8 @@ contract LendingMarket is Ownable, ReentrancyGuard {
     // CONSTANTS
     // ======================================================================
 
-    uint256 public constant RAY = 1e27;                          // 精度基数（27 位小数）
-    uint256 public constant BPS = 10000;                          // 基点基数
+    uint256 public constant RAY = 1e27; // 精度基数（27 位小数）
+    uint256 public constant BPS = 10000; // 基点基数
     uint256 public constant SECONDS_PER_YEAR = 365 days;
 
     // 闪电贷回调选择器
@@ -43,12 +43,7 @@ contract LendingMarket is Ownable, ReentrancyGuard {
     event Withdrawn(address indexed user, address indexed asset, uint256 amount);
     event Borrowed(address indexed user, address indexed asset, uint256 amount);
     event Repaid(address indexed user, address indexed asset, uint256 amount);
-    event FlashLoan(
-        address indexed receiver,
-        address indexed asset,
-        uint256 amount,
-        uint256 premium
-    );
+    event FlashLoan(address indexed receiver, address indexed asset, uint256 amount, uint256 premium);
     event Liquidated(
         address indexed liquidator,
         address indexed borrower,
@@ -67,8 +62,8 @@ contract LendingMarket is Ownable, ReentrancyGuard {
     /// @notice 每个资产的准备金数据
     struct ReserveData {
         // 指数（利率累积因子，单位 RAY）
-        uint256 liquidityIndex;       // 存款累积因子
-        uint256 borrowIndex;          // 借款累积因子
+        uint256 liquidityIndex; // 存款累积因子
+        uint256 borrowIndex; // 借款累积因子
         // 总量（实际金额，非 scaled）
         uint256 totalLiquidity;
         uint256 totalDebt;
@@ -76,14 +71,14 @@ contract LendingMarket is Ownable, ReentrancyGuard {
         uint256 lastUpdateTimestamp;
         // 利率模型参数（RAY）
         uint256 optimalUtilizationRate; // 最优利用率（默认 80% = 0.8e27）
-        uint256 baseBorrowRate;         // 基础借款利率（默认 2% = 0.02e27）
-        uint256 slope1;                 // 最优利用率内斜率
-        uint256 slope2;                 // 超出最优利用率后的跳跃斜率
+        uint256 baseBorrowRate; // 基础借款利率（默认 2% = 0.02e27）
+        uint256 slope1; // 最优利用率内斜率
+        uint256 slope2; // 超出最优利用率后的跳跃斜率
         // 风险参数（BPS）
-        uint256 collateralFactor;       // 抵押因子（默认 75% = 7500 bps）
-        uint256 liquidationThreshold;   // 清算阈值（默认 85% = 8500 bps）
-        uint256 liquidationBonus;       // 清算奖励（默认 5% = 10500 bps）
-        uint256 flashLoanPremium;       // 闪电贷手续费（默认 9 bps = 0.09%）
+        uint256 collateralFactor; // 抵押因子（默认 75% = 7500 bps）
+        uint256 liquidationThreshold; // 清算阈值（默认 85% = 8500 bps）
+        uint256 liquidationBonus; // 清算奖励（默认 5% = 10500 bps）
+        uint256 flashLoanPremium; // 闪电贷手续费（默认 9 bps = 0.09%）
         // Oracle 价格（USD，1e8 精度，兼容 Chainlink 格式）
         uint256 price;
         // 状态
@@ -92,8 +87,8 @@ contract LendingMarket is Ownable, ReentrancyGuard {
 
     /// @notice 用户余额（scaled，除以指数即得实际值）
     struct UserBalance {
-        mapping(address asset => uint256) scaledSupply;  // supply / liquidityIndex
-        mapping(address asset => uint256) scaledBorrow;  // borrow / borrowIndex
+        mapping(address asset => uint256) scaledSupply; // supply / liquidityIndex
+        mapping(address asset => uint256) scaledBorrow; // borrow / borrowIndex
     }
 
     // ======================================================================
@@ -263,10 +258,7 @@ contract LendingMarket is Ownable, ReentrancyGuard {
     }
 
     /// @notice 设置某资产是否作为抵押品
-    function setUserUseAsCollateral(address asset, bool useAsCollateral)
-        external
-        onlyActive(asset)
-    {
+    function setUserUseAsCollateral(address asset, bool useAsCollateral) external onlyActive(asset) {
         if (useAsCollateral) {
             require(_actualSupply(msg.sender, asset) > 0, "LM: NO_SUPPLY");
         }
@@ -335,12 +327,11 @@ contract LendingMarket is Ownable, ReentrancyGuard {
     /// @param asset           借款资产
     /// @param amount          借款金额（wei）
     /// @param params          自定义参数（传给回调）
-    function flashLoan(
-        address receiverAddress,
-        address asset,
-        uint256 amount,
-        bytes calldata params
-    ) external onlyActive(asset) nonReentrant {
+    function flashLoan(address receiverAddress, address asset, uint256 amount, bytes calldata params)
+        external
+        onlyActive(asset)
+        nonReentrant
+    {
         require(amount > 0, "LM: ZERO_AMOUNT");
         require(amount <= _availableLiquidity(asset), "LM: INSUFFICIENT_LIQUIDITY");
         require(receiverAddress != address(this), "LM: SELF_LOAN");
@@ -378,14 +369,7 @@ contract LendingMarket is Ownable, ReentrancyGuard {
         uint256 premium,
         bytes memory params
     ) internal returns (bool) {
-        bytes memory data = abi.encodeWithSelector(
-            FLASHLOAN_CALLBACK,
-            initiator,
-            asset,
-            amount,
-            premium,
-            params
-        );
+        bytes memory data = abi.encodeWithSelector(FLASHLOAN_CALLBACK, initiator, asset, amount, premium, params);
         (bool callOk, bytes memory returnData) = receiver.call(data);
         if (!callOk || returnData.length == 0) return false;
         return abi.decode(returnData, (bool));
@@ -400,12 +384,12 @@ contract LendingMarket is Ownable, ReentrancyGuard {
     /// @param debtAsset       债务资产地址
     /// @param borrower        被清算者
     /// @param debtToCover     清算者愿意偿还的债务金额（debtAsset 单位）
-    function liquidate(
-        address collateralAsset,
-        address debtAsset,
-        address borrower,
-        uint256 debtToCover
-    ) external onlyActive(collateralAsset) onlyActive(debtAsset) nonReentrant {
+    function liquidate(address collateralAsset, address debtAsset, address borrower, uint256 debtToCover)
+        external
+        onlyActive(collateralAsset)
+        onlyActive(debtAsset)
+        nonReentrant
+    {
         require(borrower != msg.sender, "LM: SELF_LIQUIDATE");
         require(debtToCover > 0, "LM: ZERO_AMOUNT");
 
@@ -426,8 +410,7 @@ contract LendingMarket is Ownable, ReentrancyGuard {
 
         // 计算可获得的抵押品数量
         // collateralSeized = (debtToCover * dReserve.price / cReserve.price) * liquidationBonus / BPS
-        uint256 collateralSeized =
-            (debtToCover * dReserve.price * cReserve.liquidationBonus) / (cReserve.price * BPS);
+        uint256 collateralSeized = (debtToCover * dReserve.price * cReserve.liquidationBonus) / (cReserve.price * BPS);
 
         uint256 actualCollateral = _actualSupply(borrower, collateralAsset);
         require(collateralSeized <= actualCollateral, "LM: INSUFFICIENT_COLLATERAL");
@@ -516,7 +499,7 @@ contract LendingMarket is Ownable, ReentrancyGuard {
         }
 
         if (totalCollateralUSD > 0) {
-            ltv = weightedAvgLtv / totalCollateralUSD;         // 加权平均 LTV
+            ltv = weightedAvgLtv / totalCollateralUSD; // 加权平均 LTV
             currentLiquidationThreshold = weightedAvgLiqThreshold / totalCollateralUSD;
         }
 
@@ -689,11 +672,7 @@ interface IFlashLoanReceiver {
     /// @param amount    借款金额
     /// @param premium   手续费
     /// @param params    自定义参数
-    function onFlashLoan(
-        address initiator,
-        address asset,
-        uint256 amount,
-        uint256 premium,
-        bytes calldata params
-    ) external returns (bool);
+    function onFlashLoan(address initiator, address asset, uint256 amount, uint256 premium, bytes calldata params)
+        external
+        returns (bool);
 }

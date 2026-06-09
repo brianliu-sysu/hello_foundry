@@ -21,10 +21,7 @@ contract CounterUUPSTest is Test {
         implV1 = new CounterV1Upgradeable();
         // 2. 部署 ERC1967Proxy，指向 V1，传入 initialize() calldata
         vm.prank(owner);
-        proxy = new ERC1967Proxy(
-            address(implV1),
-            abi.encodeCall(CounterV1Upgradeable.initialize, ())
-        );
+        proxy = new ERC1967Proxy(address(implV1), abi.encodeCall(CounterV1Upgradeable.initialize, ()));
         proxyAsV1 = CounterV1Upgradeable(address(proxy));
         proxyAsV2 = CounterV2Upgradeable(address(proxy));
     }
@@ -159,12 +156,12 @@ contract CounterUUPSTest is Test {
         proxyAsV1.upgradeToAndCall(address(implV2), "");
 
         // 3. V2: 状态保留 + 新方法可用
-        assertEq(proxyAsV2.number(), 101);        // 状态保留
+        assertEq(proxyAsV2.number(), 101); // 状态保留
         proxyAsV2.add(50);
-        assertEq(proxyAsV2.number(), 151);        // V2 add 可用
+        assertEq(proxyAsV2.number(), 151); // V2 add 可用
         proxyAsV2.decrement();
-        assertEq(proxyAsV2.number(), 150);        // V2 decrement 可用
+        assertEq(proxyAsV2.number(), 150); // V2 decrement 可用
         proxyAsV2.increment();
-        assertEq(proxyAsV2.number(), 151);        // V1 旧方法仍可用
+        assertEq(proxyAsV2.number(), 151); // V1 旧方法仍可用
     }
 }

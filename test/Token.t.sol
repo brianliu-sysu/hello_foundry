@@ -98,7 +98,7 @@ contract TokenTest is Test {
         emit Faucet.Deposit(alice, 0.5 ether);
 
         vm.prank(alice);
-        (bool ok, ) = address(token).call{value: 0.5 ether}("");
+        (bool ok,) = address(token).call{value: 0.5 ether}("");
         assertTrue(ok);
     }
 

@@ -92,9 +92,15 @@ contract AaveFlashArbitrage is IFlashLoanSimpleReceiver, AdminWithdrawable, Reen
         address asset,
         uint256 amount,
         uint256 premium,
-        address /*initiator*/,
+        address,
+        /*initiator*/
         bytes calldata params
-    ) external override lock returns (bool) {
+    )
+        external
+        override
+        lock
+        returns (bool)
+    {
         require(msg.sender == address(POOL), "CALLER_NOT_POOL");
 
         (address caller, address[] memory tradePath, uint256 minProfit, uint256 deadline) =

@@ -19,11 +19,16 @@ contract TokenBank is IERC1363Receiver {
     /// @param value 转入的代币数量
     /// @return IERC1363Receiver.onTransferReceived 的 selector，表示接受该转账
     function onTransferReceived(
-        address /* operator */,
+        address,
+        /* operator */
         address from,
         uint256 value,
         bytes calldata /* data */
-    ) external override returns (bytes4) {
+    )
+        external
+        override
+        returns (bytes4)
+    {
         // 记录用户存入的 token 数量，msg.sender 即代币合约地址
         deposits[from][msg.sender] += value;
 
@@ -39,10 +44,7 @@ contract TokenBank is IERC1363Receiver {
     /// @param amount 存入数量
     function deposit(address token, uint256 amount) external {
         require(amount > 0, "TokenBank: amount must be > 0");
-        require(
-            IERC20(token).transferFrom(msg.sender, address(this), amount),
-            "TokenBank: transferFrom failed"
-        );
+        require(IERC20(token).transferFrom(msg.sender, address(this), amount), "TokenBank: transferFrom failed");
         deposits[msg.sender][token] += amount;
         emit Deposited(token, msg.sender, amount);
     }
@@ -71,10 +73,7 @@ contract TokenBank is IERC1363Receiver {
         IERC20Permit(token).permit(owner, address(this), amount, deadline, v, r, s);
 
         // 2. 从 owner 转账到本合约
-        require(
-            IERC20(token).transferFrom(owner, address(this), amount),
-            "TokenBank: transferFrom failed"
-        );
+        require(IERC20(token).transferFrom(owner, address(this), amount), "TokenBank: transferFrom failed");
 
         // 3. 记录存款
         deposits[owner][token] += amount;
@@ -106,8 +105,8 @@ contract TokenBank is IERC1363Receiver {
             deadline: deadline
         });
 
-        ISignatureTransfer.SignatureTransferDetails memory transferDetails = ISignatureTransfer
-            .SignatureTransferDetails({to: address(this), requestedAmount: amount});
+        ISignatureTransfer.SignatureTransferDetails memory transferDetails =
+            ISignatureTransfer.SignatureTransferDetails({to: address(this), requestedAmount: amount});
 
         ISignatureTransfer(PERMIT2).permitTransferFrom(permit, transferDetails, owner, signature);
 

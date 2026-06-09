@@ -125,9 +125,7 @@ contract NaiveFaucetTest is Test {
     // Fuzz tests
     // =============================================================
 
-    function testFuzz_NaiveFaucet_Withdraw_Amount(
-        uint256 amount
-    ) public {
+    function testFuzz_NaiveFaucet_Withdraw_Amount(uint256 amount) public {
         amount = bound(amount, 1, 100_000 * 10 ** 18);
 
         address recipient = makeAddr("recipient");

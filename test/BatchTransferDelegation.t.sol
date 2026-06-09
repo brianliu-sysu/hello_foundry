@@ -96,9 +96,7 @@ contract BatchTransferDelegationTest is Test {
         amounts[0] = amount;
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransfer(
-            tokens, recipients, amounts
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransfer(tokens, recipients, amounts);
 
         assertTrue(results[0], "transfer should succeed");
         assertEq(token.balanceOf(bob), amount);
@@ -128,9 +126,7 @@ contract BatchTransferDelegationTest is Test {
         amounts[2] = amount3;
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransfer(
-            tokens, recipients, amounts
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransfer(tokens, recipients, amounts);
 
         assertTrue(results[0], "transfer 0");
         assertTrue(results[1], "transfer 1");
@@ -186,9 +182,7 @@ contract BatchTransferDelegationTest is Test {
         amounts[0] = 0;
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransfer(
-            tokens, recipients, amounts
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransfer(tokens, recipients, amounts);
 
         // ERC20 transfer of 0 succeeds
         assertTrue(results[0], "zero transfer should succeed");
@@ -208,9 +202,7 @@ contract BatchTransferDelegationTest is Test {
         amounts[0] = tooMuch;
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransfer(
-            tokens, recipients, amounts
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransfer(tokens, recipients, amounts);
 
         // ERC20 transfer reverting would be caught; false means it didn't revert within the call
         assertFalse(results[0], "insufficient balance should fail");
@@ -236,9 +228,7 @@ contract BatchTransferDelegationTest is Test {
         uint256 bobBefore = address(bob).balance;
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransferETH(
-            recipients, amounts
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransferETH(recipients, amounts);
 
         assertTrue(results[0], "ETH transfer should succeed");
         assertEq(address(bob).balance, bobBefore + amount);
@@ -262,9 +252,7 @@ contract BatchTransferDelegationTest is Test {
         uint256 carolBefore = address(carol).balance;
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransferETH(
-            recipients, amounts
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransferETH(recipients, amounts);
 
         assertTrue(results[0], "transfer 0");
         assertTrue(results[1], "transfer 1");
@@ -299,9 +287,7 @@ contract BatchTransferDelegationTest is Test {
         amounts[0] = 1 ether;
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransferETH(
-            recipients, amounts
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransferETH(recipients, amounts);
 
         assertFalse(results[0], "insufficient ETH should fail");
     }
@@ -337,9 +323,7 @@ contract BatchTransferDelegationTest is Test {
         payloads[0] = abi.encodeWithSignature("transfer(address,uint256)", bob, amount);
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchCall(
-            targets, values, payloads
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchCall(targets, values, payloads);
 
         assertTrue(results[0], "call should succeed");
         assertEq(token.balanceOf(bob), amount);
@@ -362,9 +346,7 @@ contract BatchTransferDelegationTest is Test {
         uint256 bobBefore = address(bob).balance;
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchCall(
-            targets, values, payloads
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchCall(targets, values, payloads);
 
         assertTrue(results[0], "ETH transfer should succeed");
         assertEq(address(bob).balance, bobBefore + amount);
@@ -379,7 +361,7 @@ contract BatchTransferDelegationTest is Test {
 
         address[] memory targets = new address[](2);
         targets[0] = address(token); // ERC20 transfer
-        targets[1] = bob;            // ETH transfer
+        targets[1] = bob; // ETH transfer
 
         uint256[] memory values = new uint256[](2);
         values[0] = 0;
@@ -392,9 +374,7 @@ contract BatchTransferDelegationTest is Test {
         uint256 bobEthBefore = address(bob).balance;
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchCall(
-            targets, values, payloads
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchCall(targets, values, payloads);
 
         assertTrue(results[0], "ERC20 call should succeed");
         assertTrue(results[1], "ETH call should succeed");
@@ -422,9 +402,7 @@ contract BatchTransferDelegationTest is Test {
         payloads[1] = abi.encodeWithSignature("approve(address,uint256)", carol, approveAmount);
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchCall(
-            targets, values, payloads
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchCall(targets, values, payloads);
 
         assertTrue(results[0], "transfer should succeed");
         assertTrue(results[1], "approve should succeed");
@@ -475,7 +453,7 @@ contract BatchTransferDelegationTest is Test {
         address[] memory targets = new address[](3);
         targets[0] = address(token); // will succeed
         targets[1] = address(token); // will fail (insufficient balance)
-        targets[2] = bob;            // ETH — will succeed
+        targets[2] = bob; // ETH — will succeed
 
         uint256[] memory values = new uint256[](3);
         values[0] = 0;
@@ -490,9 +468,7 @@ contract BatchTransferDelegationTest is Test {
         uint256 bobEthBefore = address(bob).balance;
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchCall(
-            targets, values, payloads
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchCall(targets, values, payloads);
 
         assertTrue(results[0], "call 0 should succeed");
         assertFalse(results[1], "call 1 should fail (insufficient balance)");
@@ -510,9 +486,7 @@ contract BatchTransferDelegationTest is Test {
         bytes[] memory payloads = new bytes[](0);
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchCall(
-            targets, values, payloads
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchCall(targets, values, payloads);
 
         assertEq(results.length, 0);
     }
@@ -534,9 +508,8 @@ contract BatchTransferDelegationTest is Test {
         vm.prank(bob);
         // Calling a non-delegated EOA with calldata should succeed but do nothing
         // (CALL to EOA always succeeds, returns empty data)
-        (bool ok, bytes memory ret) = address(bob).call(
-            abi.encodeWithSelector(BatchTransferDelegation.batchTransfer.selector, tokens, recipients, amounts)
-        );
+        (bool ok, bytes memory ret) = address(bob)
+            .call(abi.encodeWithSelector(BatchTransferDelegation.batchTransfer.selector, tokens, recipients, amounts));
         // CALL to EOA succeeds but returns no data
         assertTrue(ok);
         assertEq(ret.length, 0);
@@ -559,9 +532,7 @@ contract BatchTransferDelegationTest is Test {
         amounts[0] = amount;
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransfer(
-            tokens, recipients, amounts
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransfer(tokens, recipients, amounts);
 
         assertTrue(results[0]);
         assertEq(token.balanceOf(bob), amount);
@@ -582,9 +553,7 @@ contract BatchTransferDelegationTest is Test {
         uint256 bobBefore = address(bob).balance;
 
         vm.prank(alice);
-        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransferETH(
-            recipients, amounts
-        );
+        bool[] memory results = BatchTransferDelegation(payable(alice)).batchTransferETH(recipients, amounts);
 
         // Check against pre-transfer balance, not post-transfer
         assertEq(results[0], amount <= aliceBefore ? true : false);

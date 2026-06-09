@@ -10,7 +10,7 @@ contract MemeFactoryTest is Test {
     MemeFactory public factory;
 
     address public alice = makeAddr("alice");
-    address public bob   = makeAddr("bob");
+    address public bob = makeAddr("bob");
 
     function setUp() public {
         // 1. 部署模板
@@ -145,11 +145,7 @@ contract MemeFactoryTest is Test {
     // Fuzz
     // =============================================================
 
-    function testFuzz_CreateMeme(
-        string calldata name_,
-        string calldata symbol_,
-        uint256 supply_
-    ) public {
+    function testFuzz_CreateMeme(string calldata name_, string calldata symbol_, uint256 supply_) public {
         // 过滤空 name/symbol（允许，但 OZ ERC20 可能 revert）
         supply_ = bound(supply_, 1, 1_000_000_000 * 10 ** 18);
 

@@ -104,9 +104,8 @@ contract UniswapV2Test is Test {
     }
 
     function test_Factory_CreatePair_EmitsEvent() public {
-        (address t0, address t1) = address(tokenA) < address(tokenB)
-            ? (address(tokenA), address(tokenB))
-            : (address(tokenB), address(tokenA));
+        (address t0, address t1) =
+            address(tokenA) < address(tokenB) ? (address(tokenA), address(tokenB)) : (address(tokenB), address(tokenA));
 
         vm.prank(deployer);
         // Check token0 & token1 (indexed), skip pair & length
@@ -164,9 +163,8 @@ contract UniswapV2Test is Test {
         vm.startPrank(alice);
         tokenA.approve(address(router), amountA);
         tokenB.approve(address(router), amountB);
-        (,, uint256 liquidity) = router.addLiquidity(
-            address(tokenA), address(tokenB), amountA, amountB, 0, 0, alice, block.timestamp
-        );
+        (,, uint256 liquidity) =
+            router.addLiquidity(address(tokenA), address(tokenB), amountA, amountB, 0, 0, alice, block.timestamp);
         vm.stopPrank();
 
         uint256 minLiq = 10 ** 3;
@@ -300,10 +298,8 @@ contract UniswapV2Test is Test {
         vm.startPrank(alice);
         tokenA.approve(address(router), amountA);
         tokenB.approve(address(router), amountB);
-        (uint256 a, uint256 b, uint256 liquidity) = router.addLiquidity(
-            address(tokenA), address(tokenB),
-            amountA, amountB, 0, 0, alice, block.timestamp
-        );
+        (uint256 a, uint256 b, uint256 liquidity) =
+            router.addLiquidity(address(tokenA), address(tokenB), amountA, amountB, 0, 0, alice, block.timestamp);
         vm.stopPrank();
 
         assertEq(a, amountA);
@@ -323,9 +319,8 @@ contract UniswapV2Test is Test {
         tokenA.approve(address(router), tokenAmount);
 
         vm.deal(alice, ethAmount * 2);
-        (uint256 amountToken, uint256 amountETH, uint256 liquidity) = router.addLiquidityETH{value: ethAmount}(
-            address(tokenA), tokenAmount, 0, 0, alice, block.timestamp
-        );
+        (uint256 amountToken, uint256 amountETH, uint256 liquidity) =
+            router.addLiquidityETH{value: ethAmount}(address(tokenA), tokenAmount, 0, 0, alice, block.timestamp);
         vm.stopPrank();
 
         assertEq(amountToken, tokenAmount);
@@ -341,10 +336,8 @@ contract UniswapV2Test is Test {
 
         vm.startPrank(alice);
         IERC20(pair).approve(address(router), lpBalance);
-        (uint256 amountA, uint256 amountB) = router.removeLiquidity(
-            address(tokenA), address(tokenB),
-            lpBalance, 0, 0, alice, block.timestamp
-        );
+        (uint256 amountA, uint256 amountB) =
+            router.removeLiquidity(address(tokenA), address(tokenB), lpBalance, 0, 0, alice, block.timestamp);
         vm.stopPrank();
 
         assertTrue(amountA > 0);
@@ -359,16 +352,14 @@ contract UniswapV2Test is Test {
         vm.startPrank(alice);
         tokenA.approve(address(router), tokenAmount);
         vm.deal(alice, ethAmount * 2);
-        (,, uint256 liquidity) = router.addLiquidityETH{value: ethAmount}(
-            address(tokenA), tokenAmount, 0, 0, alice, block.timestamp
-        );
+        (,, uint256 liquidity) =
+            router.addLiquidityETH{value: ethAmount}(address(tokenA), tokenAmount, 0, 0, alice, block.timestamp);
 
         address pair = factory.getPair(address(tokenA), address(weth));
         IERC20(pair).approve(address(router), liquidity);
         uint256 ethBefore = alice.balance;
-        (uint256 amountToken, uint256 amountETH) = router.removeLiquidityETH(
-            address(tokenA), liquidity, 0, 0, alice, block.timestamp
-        );
+        (uint256 amountToken, uint256 amountETH) =
+            router.removeLiquidityETH(address(tokenA), liquidity, 0, 0, alice, block.timestamp);
         vm.stopPrank();
 
         assertTrue(amountToken > 0);
@@ -390,9 +381,7 @@ contract UniswapV2Test is Test {
         vm.startPrank(alice);
         tokenA.approve(address(router), swapAmount);
         uint256 bobBefore = tokenB.balanceOf(bob);
-        uint256[] memory result = router.swapExactTokensForTokens(
-            swapAmount, expectedOut, path, bob, block.timestamp
-        );
+        uint256[] memory result = router.swapExactTokensForTokens(swapAmount, expectedOut, path, bob, block.timestamp);
         vm.stopPrank();
 
         assertEq(result[1], expectedOut);
@@ -442,9 +431,7 @@ contract UniswapV2Test is Test {
         vm.startPrank(alice);
         tokenA.approve(address(router), tokenAmount);
         vm.deal(alice, ethAmount * 2);
-        router.addLiquidityETH{value: ethAmount}(
-            address(tokenA), tokenAmount, 0, 0, alice, block.timestamp
-        );
+        router.addLiquidityETH{value: ethAmount}(address(tokenA), tokenAmount, 0, 0, alice, block.timestamp);
         vm.stopPrank();
 
         // Bob swaps ETH for tokenA
@@ -459,9 +446,7 @@ contract UniswapV2Test is Test {
         vm.deal(bob, swapEth);
         vm.startPrank(bob);
         uint256 bobBefore = tokenA.balanceOf(bob);
-        router.swapExactETHForTokens{value: swapEth}(
-            expectedOut, path, bob, block.timestamp
-        );
+        router.swapExactETHForTokens{value: swapEth}(expectedOut, path, bob, block.timestamp);
         vm.stopPrank();
 
         assertEq(tokenA.balanceOf(bob), bobBefore + expectedOut);
@@ -474,9 +459,7 @@ contract UniswapV2Test is Test {
         vm.startPrank(alice);
         tokenA.approve(address(router), tokenAmount);
         vm.deal(alice, ethAmount * 2);
-        router.addLiquidityETH{value: ethAmount}(
-            address(tokenA), tokenAmount, 0, 0, alice, block.timestamp
-        );
+        router.addLiquidityETH{value: ethAmount}(address(tokenA), tokenAmount, 0, 0, alice, block.timestamp);
         vm.stopPrank();
 
         // Alice swaps tokenA for ETH
@@ -521,8 +504,13 @@ contract UniswapV2Test is Test {
         vm.warp(block.timestamp + 100);
         vm.expectRevert("UniswapV2Router: EXPIRED");
         router.addLiquidity(
-            address(tokenA), address(tokenB),
-            amountA, amountB, 0, 0, alice,
+            address(tokenA),
+            address(tokenB),
+            amountA,
+            amountB,
+            0,
+            0,
+            alice,
             block.timestamp - 1 // deadline in the past
         );
         vm.stopPrank();
@@ -621,11 +609,7 @@ contract UniswapV2Test is Test {
         }
     }
 
-    function _getAmountOut(
-        uint256 amountIn,
-        uint256 reserveIn,
-        uint256 reserveOut
-    ) internal pure returns (uint256) {
+    function _getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut) internal pure returns (uint256) {
         uint256 amountInWithFee = amountIn * 997;
         uint256 numerator = amountInWithFee * reserveOut;
         uint256 denominator = reserveIn * 1000 + amountInWithFee;

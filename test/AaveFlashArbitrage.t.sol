@@ -45,16 +45,16 @@ contract MockAavePool {
         uint256 amount,
         bytes calldata params,
         uint16 /*referralCode*/
-    ) external {
+    )
+        external
+    {
         uint256 premium = (amount * FLASHLOAN_PREMIUM_TOTAL) / PREMIUM_BASE;
 
         // Step 1: Lend
         IERC20(asset).transfer(receiver, amount);
 
         // Step 2: Callback
-        bool ok = IFlashLoanSimpleReceiver(receiver).executeOperation(
-            asset, amount, premium, address(this), params
-        );
+        bool ok = IFlashLoanSimpleReceiver(receiver).executeOperation(asset, amount, premium, address(this), params);
         require(ok, "FLASH_LOAN_FAILED");
 
         // Step 3: Pull back amount + premium
@@ -173,11 +173,7 @@ contract AaveFlashArbitrageTest is Test {
     // UNISWAP V2 MATH HELPERS
     // ======================================================================
 
-    function _getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut)
-        internal
-        pure
-        returns (uint256)
-    {
+    function _getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut) internal pure returns (uint256) {
         uint256 amountInWithFee = amountIn * 997;
         uint256 numerator = amountInWithFee * reserveOut;
         uint256 denominator = (reserveIn * 1000) + amountInWithFee;

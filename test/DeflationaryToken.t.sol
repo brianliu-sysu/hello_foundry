@@ -7,9 +7,9 @@ import {DeflationaryToken} from "../src/token/DeflationaryToken.sol";
 contract DeflationaryTokenTest is Test {
     DeflationaryToken public token;
 
-    address public owner  = makeAddr("owner");
-    address public alice  = makeAddr("alice");
-    address public bob    = makeAddr("bob");
+    address public owner = makeAddr("owner");
+    address public alice = makeAddr("alice");
+    address public bob = makeAddr("bob");
 
     uint256 constant INITIAL_SUPPLY = 100_000_000 ether; // 1 亿
 
@@ -24,7 +24,7 @@ contract DeflationaryTokenTest is Test {
         // Transfer some tokens to alice and bob
         vm.startPrank(owner);
         token.transfer(alice, 1_000_000 ether);
-        token.transfer(bob,   2_000_000 ether);
+        token.transfer(bob, 2_000_000 ether);
         vm.stopPrank();
     }
 
@@ -36,7 +36,7 @@ contract DeflationaryTokenTest is Test {
         assertEq(token.totalSupply(), INITIAL_SUPPLY);
         assertEq(token.balanceOf(owner), 97_000_000 ether);
         assertEq(token.balanceOf(alice), 1_000_000 ether);
-        assertEq(token.balanceOf(bob),   2_000_000 ether);
+        assertEq(token.balanceOf(bob), 2_000_000 ether);
     }
 
     function test_Deployment_InitialGonsPerToken() public view {
@@ -62,7 +62,7 @@ contract DeflationaryTokenTest is Test {
         token.transfer(bob, 100 ether);
 
         assertEq(token.balanceOf(alice), 1_000_000 ether - 100 ether);
-        assertEq(token.balanceOf(bob),   2_000_000 ether + 100 ether);
+        assertEq(token.balanceOf(bob), 2_000_000 ether + 100 ether);
     }
 
     function test_Transfer_InsufficientBalance() public {
@@ -79,7 +79,7 @@ contract DeflationaryTokenTest is Test {
         token.transferFrom(alice, bob, 500 ether);
 
         assertEq(token.balanceOf(alice), 1_000_000 ether - 500 ether);
-        assertEq(token.balanceOf(bob),   2_000_000 ether + 500 ether);
+        assertEq(token.balanceOf(bob), 2_000_000 ether + 500 ether);
         assertEq(token.allowance(alice, bob), 0);
     }
 
@@ -89,8 +89,8 @@ contract DeflationaryTokenTest is Test {
 
     function test_Rebase_SingleDay_1PercentDeflation() public {
         uint256 supplyBefore = token.totalSupply();
-        uint256 aliceBefore   = token.balanceOf(alice);
-        uint256 bobBefore     = token.balanceOf(bob);
+        uint256 aliceBefore = token.balanceOf(alice);
+        uint256 bobBefore = token.balanceOf(bob);
 
         // 1 day 后执行 rebase
         vm.warp(block.timestamp + 1 days);
@@ -99,7 +99,7 @@ contract DeflationaryTokenTest is Test {
         // 总供应 ≈ 原供应 * 0.99
         assertApproxEqRel(token.totalSupply(), supplyBefore * 99 / 100, 0.0001e18);
         assertApproxEqRel(token.balanceOf(alice), aliceBefore * 99 / 100, 0.0001e18);
-        assertApproxEqRel(token.balanceOf(bob),   bobBefore * 99 / 100, 0.0001e18);
+        assertApproxEqRel(token.balanceOf(bob), bobBefore * 99 / 100, 0.0001e18);
 
         // 全部余额之和应等于总供应（允许极小的舍入误差）
         uint256 sum = token.balanceOf(owner) + token.balanceOf(alice) + token.balanceOf(bob);
@@ -178,13 +178,13 @@ contract DeflationaryTokenTest is Test {
         token.rebase();
 
         uint256 aliceBefore = token.balanceOf(alice);
-        uint256 bobBefore   = token.balanceOf(bob);
+        uint256 bobBefore = token.balanceOf(bob);
 
         vm.prank(alice);
         token.transfer(bob, 10 ether);
 
         assertApproxEqAbs(token.balanceOf(alice), aliceBefore - 10 ether, 1);
-        assertApproxEqAbs(token.balanceOf(bob),   bobBefore + 10 ether, 1);
+        assertApproxEqAbs(token.balanceOf(bob), bobBefore + 10 ether, 1);
     }
 
     function test_Transfer_AfterMultipleRebases() public {
@@ -193,7 +193,7 @@ contract DeflationaryTokenTest is Test {
         token.rebase();
 
         uint256 aliceBefore = token.balanceOf(alice);
-        uint256 bobBefore   = token.balanceOf(bob);
+        uint256 bobBefore = token.balanceOf(bob);
 
         vm.prank(alice);
         token.transfer(bob, aliceBefore); // transfer all
@@ -265,9 +265,7 @@ contract DeflationaryTokenTest is Test {
         token.transfer(bob, 0.000001 ether);
 
         assertApproxEqAbs(
-            token.balanceOf(alice) + token.balanceOf(bob) + token.balanceOf(owner),
-            token.totalSupply(),
-            3
+            token.balanceOf(alice) + token.balanceOf(bob) + token.balanceOf(owner), token.totalSupply(), 3
         );
     }
 
@@ -284,18 +282,22 @@ contract DeflationaryTokenTest is Test {
         vm.prank(owner);
         token.transfer(signer, 5000 ether);
 
-        bytes32 digest = keccak256(abi.encodePacked(
-            "\x19\x01",
-            token.DOMAIN_SEPARATOR(),
-            keccak256(abi.encode(
-                keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"),
-                signer,
-                bob,
-                1000 ether,
-                token.nonces(signer),
-                block.timestamp + 1 hours
-            ))
-        ));
+        bytes32 digest = keccak256(
+            abi.encodePacked(
+                "\x19\x01",
+                token.DOMAIN_SEPARATOR(),
+                keccak256(
+                    abi.encode(
+                        keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"),
+                        signer,
+                        bob,
+                        1000 ether,
+                        token.nonces(signer),
+                        block.timestamp + 1 hours
+                    )
+                )
+            )
+        );
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(signerKey, digest);
 

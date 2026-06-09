@@ -9,11 +9,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /// @notice BrianICOToken — ERC1363 + EIP-2612 permit 代币，owner 可提回误转入的余额
 contract BrianICOToken is ERC1363, ERC20Permit, Ownable {
-    constructor(uint256 initialSupply)
-        ERC20("BrianICOToken", "BIT")
-        ERC20Permit("BrianICOToken")
-        Ownable(msg.sender)
-    {
+    constructor(uint256 initialSupply) ERC20("BrianICOToken", "BIT") ERC20Permit("BrianICOToken") Ownable(msg.sender) {
         _mint(msg.sender, initialSupply);
     }
 

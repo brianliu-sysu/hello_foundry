@@ -54,14 +54,14 @@ contract StakingPool is Ownable, ReentrancyGuard {
     // STORAGE
     // ======================================================================
 
-    uint256 public totalStaked;                          // 总质押 ETH 量（wei）
-    uint256 public rewardPerTokenStored;                 // 每质押 1 ETH 的累计奖励（PRECISION 精度）
-    uint256 public lastUpdateBlock;                      // 上次更新时 block.number
-    uint256 public totalRewardsMinted;                   // 累计已铸造的 KK
+    uint256 public totalStaked; // 总质押 ETH 量（wei）
+    uint256 public rewardPerTokenStored; // 每质押 1 ETH 的累计奖励（PRECISION 精度）
+    uint256 public lastUpdateBlock; // 上次更新时 block.number
+    uint256 public totalRewardsMinted; // 累计已铸造的 KK
 
-    mapping(address user => uint256) public stakedBalance;           // 用户质押 ETH 量
-    mapping(address user => uint256) public userRewardPerTokenPaid;  // 用户已结算的 rewardPerToken
-    mapping(address user => uint256) public rewards;                 // 用户待领取的 KK
+    mapping(address user => uint256) public stakedBalance; // 用户质押 ETH 量
+    mapping(address user => uint256) public userRewardPerTokenPaid; // 用户已结算的 rewardPerToken
+    mapping(address user => uint256) public rewards; // 用户待领取的 KK
 
     // ======================================================================
     // CONSTRUCTOR
@@ -175,8 +175,7 @@ contract StakingPool is Ownable, ReentrancyGuard {
             uint256 newRewards = blocksElapsed * REWARD_PER_BLOCK;
             predictedRPT += (newRewards * PRECISION) / totalStaked;
         }
-        return rewards[user]
-            + (stakedBalance[user] * (predictedRPT - userRewardPerTokenPaid[user])) / PRECISION;
+        return rewards[user] + (stakedBalance[user] * (predictedRPT - userRewardPerTokenPaid[user])) / PRECISION;
     }
 
     /// @notice 查询合约在 LendingMarket 中的 WETH 余额
@@ -231,8 +230,7 @@ contract StakingPool is Ownable, ReentrancyGuard {
 
     /// @dev 更新用户的待领取奖励（在 stake/withdraw/claim 之前调用）
     function _updateReward(address user) internal {
-        uint256 newReward = stakedBalance[user]
-            * (rewardPerTokenStored - userRewardPerTokenPaid[user]) / PRECISION;
+        uint256 newReward = stakedBalance[user] * (rewardPerTokenStored - userRewardPerTokenPaid[user]) / PRECISION;
         if (newReward > 0) {
             rewards[user] += newReward;
         }

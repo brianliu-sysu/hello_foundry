@@ -37,12 +37,10 @@ contract BrianNFT is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     /// @param symbol_       NFT 符号
     /// @param baseTokenURI_ 基础元数据 URI
     /// @param maxSupply_    最大供应量，0 表示无上限
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        string memory baseTokenURI_,
-        uint256 maxSupply_
-    ) ERC721(name_, symbol_) Ownable(msg.sender) {
+    constructor(string memory name_, string memory symbol_, string memory baseTokenURI_, uint256 maxSupply_)
+        ERC721(name_, symbol_)
+        Ownable(msg.sender)
+    {
         _baseTokenURI = baseTokenURI_;
         maxSupply = maxSupply_;
     }
@@ -62,10 +60,7 @@ contract BrianNFT is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     /// @notice 批量铸造，owner 一次为多个地址各铸造一枚
     /// @param recipients 接收者地址列表
     /// @param uris      每个接收者对应的 URI 列表，长度须与 recipients 一致
-    function safeMintBatch(
-        address[] calldata recipients,
-        string[] calldata uris
-    ) external onlyOwner {
+    function safeMintBatch(address[] calldata recipients, string[] calldata uris) external onlyOwner {
         require(recipients.length == uris.length, "BrianNFT: length mismatch");
         for (uint256 i = 0; i < recipients.length; i++) {
             _mintToken(recipients[i], uris[i]);
@@ -97,10 +92,7 @@ contract BrianNFT is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
 
     /// @notice 更新最大供应量（不可低于已铸造量）
     function setMaxSupply(uint256 newMaxSupply) external onlyOwner {
-        require(
-            newMaxSupply == 0 || newMaxSupply >= _nextTokenId,
-            "BrianNFT: below minted"
-        );
+        require(newMaxSupply == 0 || newMaxSupply >= _nextTokenId, "BrianNFT: below minted");
         maxSupply = newMaxSupply;
         emit MaxSupplyUpdated(newMaxSupply);
     }
@@ -127,27 +119,19 @@ contract BrianNFT is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
         return _baseTokenURI;
     }
 
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (string memory)
-    {
+    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
         return super.tokenURI(tokenId);
     }
 
-    function _update(
-        address to,
-        uint256 tokenId,
-        address auth
-    ) internal override(ERC721, ERC721Enumerable) returns (address) {
+    function _update(address to, uint256 tokenId, address auth)
+        internal
+        override(ERC721, ERC721Enumerable)
+        returns (address)
+    {
         return super._update(to, tokenId, auth);
     }
 
-    function _increaseBalance(
-        address account,
-        uint128 value
-    ) internal override(ERC721, ERC721Enumerable) {
+    function _increaseBalance(address account, uint128 value) internal override(ERC721, ERC721Enumerable) {
         super._increaseBalance(account, value);
     }
 

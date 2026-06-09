@@ -93,7 +93,13 @@ contract FlashArbitrage is IUniswapV2Callee, AdminWithdrawable, ReentrancyGuard 
     // FLASH SWAP CALLBACK
     // ======================================================================
 
-    function uniswapV2Call(address /*sender*/, uint256 amount0, uint256 amount1, bytes calldata data)
+    function uniswapV2Call(
+        address,
+        /*sender*/
+        uint256 amount0,
+        uint256 amount1,
+        bytes calldata data
+    )
         external
         override
         lock
@@ -105,9 +111,7 @@ contract FlashArbitrage is IUniswapV2Callee, AdminWithdrawable, ReentrancyGuard 
     // INTERNAL: CALLBACK HANDLER
     // ======================================================================
 
-    function _handleCallback(address pair, uint256 amount0, uint256 amount1, bytes calldata data)
-        internal
-    {
+    function _handleCallback(address pair, uint256 amount0, uint256 amount1, bytes calldata data) internal {
         (address caller, address[] memory tradePath, uint256 minProfit, uint256 deadline) =
             abi.decode(data, (address, address[], uint256, uint256));
 
@@ -147,14 +151,12 @@ contract FlashArbitrage is IUniswapV2Callee, AdminWithdrawable, ReentrancyGuard 
     // INTERNAL: FLASH SWAP REPAY MATH
     // ======================================================================
 
-    function _calculateRepayAmount(
-        address pair,
-        address borrowToken,
-        address repayToken,
-        uint256 borrowAmount
-    ) internal view returns (uint256) {
-        (uint256 reserveBorrow, uint256 reserveRepay) =
-            UniswapV2Helper.getReserves(pair, borrowToken, repayToken);
+    function _calculateRepayAmount(address pair, address borrowToken, address repayToken, uint256 borrowAmount)
+        internal
+        view
+        returns (uint256)
+    {
+        (uint256 reserveBorrow, uint256 reserveRepay) = UniswapV2Helper.getReserves(pair, borrowToken, repayToken);
         return UniswapV2Helper.getAmountIn(borrowAmount, reserveRepay, reserveBorrow);
     }
 }

@@ -18,13 +18,13 @@ contract CallerTest is Test {
     // =============================================================
 
     function test_CalledContract_ReturnsCorrectSender() public {
-        (address sender, , address from) = calledContract.calledFunction();
+        (address sender,, address from) = calledContract.calledFunction();
         assertEq(sender, address(this));
         assertEq(from, address(calledContract));
     }
 
     function test_CalledContract_ReturnsTxOrigin() public {
-        ( , address origin, ) = calledContract.calledFunction();
+        (, address origin,) = calledContract.calledFunction();
         assertEq(origin, tx.origin);
     }
 

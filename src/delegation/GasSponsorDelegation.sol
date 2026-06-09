@@ -83,9 +83,7 @@ contract GasSponsorDelegation {
 
         uint256 fee = (received * feeBps) / 10000;
         if (fee > 0) {
-            (bool okFee,) = tokenAddr.call(
-                abi.encodeWithSignature("transfer(address,uint256)", relayer, fee)
-            );
+            (bool okFee,) = tokenAddr.call(abi.encodeWithSignature("transfer(address,uint256)", relayer, fee));
             require(okFee, "fee transfer failed");
         }
 

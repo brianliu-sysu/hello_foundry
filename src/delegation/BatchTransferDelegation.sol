@@ -32,11 +32,10 @@ contract BatchTransferDelegation {
     /// @param  recipients Array of recipient addresses
     /// @param  amounts    Array of amounts (in token decimals)
     /// @return results    bool[] — true for each successful transfer
-    function batchTransfer(
-        address[] calldata tokens,
-        address[] calldata recipients,
-        uint256[] calldata amounts
-    ) external returns (bool[] memory results) {
+    function batchTransfer(address[] calldata tokens, address[] calldata recipients, uint256[] calldata amounts)
+        external
+        returns (bool[] memory results)
+    {
         uint256 len = tokens.length;
         require(len == recipients.length && len == amounts.length, "BatchTransfer: length mismatch");
 
@@ -44,9 +43,7 @@ contract BatchTransferDelegation {
         for (uint256 i = 0; i < len; i++) {
             // Regular CALL — in EIP-7702 delegation context, the EOA is the caller,
             // so token.transfer() works directly (EOA owns the tokens).
-            (bool ok,) = tokens[i].call(
-                abi.encodeWithSignature("transfer(address,uint256)", recipients[i], amounts[i])
-            );
+            (bool ok,) = tokens[i].call(abi.encodeWithSignature("transfer(address,uint256)", recipients[i], amounts[i]));
             results[i] = ok;
         }
 
@@ -59,10 +56,10 @@ contract BatchTransferDelegation {
     /// @param  recipients Array of recipient addresses
     /// @param  amounts    Array of amounts (in wei)
     /// @return results    bool[] — true for each successful transfer
-    function batchTransferETH(
-        address[] calldata recipients,
-        uint256[] calldata amounts
-    ) external returns (bool[] memory results) {
+    function batchTransferETH(address[] calldata recipients, uint256[] calldata amounts)
+        external
+        returns (bool[] memory results)
+    {
         uint256 len = recipients.length;
         require(len == amounts.length, "BatchTransfer: length mismatch");
 
@@ -84,11 +81,10 @@ contract BatchTransferDelegation {
     /// @param  values   Array of ETH values (in wei) to send with each call
     /// @param  payloads Array of calldata for each call
     /// @return results  bool[] — true for each successful call
-    function batchCall(
-        address[] calldata targets,
-        uint256[] calldata values,
-        bytes[] calldata payloads
-    ) external returns (bool[] memory results) {
+    function batchCall(address[] calldata targets, uint256[] calldata values, bytes[] calldata payloads)
+        external
+        returns (bool[] memory results)
+    {
         uint256 len = targets.length;
         require(len == values.length && len == payloads.length, "BatchCall: length mismatch");
 

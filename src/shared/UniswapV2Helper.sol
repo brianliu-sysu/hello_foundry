@@ -18,37 +18,26 @@ library UniswapV2Helper {
     // CONSTANTS
     // ======================================================================
 
-    bytes4 internal constant TRANSFER_SELECTOR =
-        bytes4(keccak256(bytes("transfer(address,uint256)")));
+    bytes4 internal constant TRANSFER_SELECTOR = bytes4(keccak256(bytes("transfer(address,uint256)")));
 
     // ======================================================================
     // TOKEN SORTING & PAIR ADDRESS
     // ======================================================================
 
-    function sortTokens(address tokenA, address tokenB)
-        internal
-        pure
-        returns (address token0, address token1)
-    {
+    function sortTokens(address tokenA, address tokenB) internal pure returns (address token0, address token1) {
         require(tokenA != tokenB, "IDENTICAL_ADDRESSES");
         (token0, token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
         require(token0 != address(0), "ZERO_ADDRESS");
     }
 
-    function pairFor(address factory, address tokenA, address tokenB)
-        internal
-        view
-        returns (address)
-    {
+    function pairFor(address factory, address tokenA, address tokenB) internal view returns (address) {
         (address token0, address token1) = sortTokens(tokenA, tokenB);
         bytes32 pairCodeHash = IUniswapV2Factory(factory).pairCodeHash();
         return address(
             uint160(
                 uint256(
                     keccak256(
-                        abi.encodePacked(
-                            hex"ff", factory, keccak256(abi.encodePacked(token0, token1)), pairCodeHash
-                        )
+                        abi.encodePacked(hex"ff", factory, keccak256(abi.encodePacked(token0, token1)), pairCodeHash)
                     )
                 )
             )
@@ -161,10 +150,7 @@ library UniswapV2Helper {
 
     /// @notice 低层级 ERC20 transfer，兼容不返回 bool 的代币
     function safeTransfer(address token, address to, uint256 value) internal {
-        (bool success, bytes memory data) =
-            token.call(abi.encodeWithSelector(TRANSFER_SELECTOR, to, value));
-        require(
-            success && (data.length == 0 || abi.decode(data, (bool))), "TRANSFER_FAILED"
-        );
+        (bool success, bytes memory data) = token.call(abi.encodeWithSelector(TRANSFER_SELECTOR, to, value));
+        require(success && (data.length == 0 || abi.decode(data, (bool))), "TRANSFER_FAILED");
     }
 }

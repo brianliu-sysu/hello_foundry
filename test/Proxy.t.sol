@@ -17,7 +17,7 @@ contract CounterV2 {
     }
 
     function add(uint256 i) public {
-        number = number +i;
+        number = number + i;
     }
 }
 

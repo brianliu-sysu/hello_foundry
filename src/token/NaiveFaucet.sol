@@ -13,7 +13,7 @@ contract NaiveFaucet {
         token.approve(address(this), type(uint256).max);
     }
 
-    event Withdrawal(address indexed to, uint amount);
+    event Withdrawal(address indexed to, uint256 amount);
 
     function withdraw(uint256 amount) public {
         require(amount <= 100000e18, "Amount is too large");

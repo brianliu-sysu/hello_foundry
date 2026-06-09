@@ -10,7 +10,7 @@ contract BrianNFTTest is Test {
 
     address public owner = makeAddr("owner");
     address public alice = makeAddr("alice");
-    address public bob   = makeAddr("bob");
+    address public bob = makeAddr("bob");
 
     string constant BASE_URI = "https://metadata.example.com/token/";
 
@@ -285,9 +285,7 @@ contract BrianNFTTest is Test {
     // Fuzz test
     // =============================================================
 
-    function testFuzz_SafeMint_OwnerOfMatches(
-        uint256 amount
-    ) public {
+    function testFuzz_SafeMint_OwnerOfMatches(uint256 amount) public {
         amount = bound(amount, 1, 100);
 
         vm.startPrank(owner);

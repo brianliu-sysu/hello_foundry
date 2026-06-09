@@ -22,25 +22,11 @@ contract NFTMarketTest is Test {
     uint256 constant FEE_BPS = 250; // 2.5%
     string constant BASE_URI = "https://metadata.example.com/token/";
 
-    event Listed(
-        address indexed seller,
-        BrianNFT indexed nft,
-        uint256 indexed tokenId,
-        uint256 price
-    );
+    event Listed(address indexed seller, BrianNFT indexed nft, uint256 indexed tokenId, uint256 price);
     event Sold(
-        address indexed seller,
-        address indexed buyer,
-        BrianNFT indexed nft,
-        uint256 tokenId,
-        uint256 price,
-        uint256 fee
+        address indexed seller, address indexed buyer, BrianNFT indexed nft, uint256 tokenId, uint256 price, uint256 fee
     );
-    event Cancelled(
-        address indexed seller,
-        BrianNFT indexed nft,
-        uint256 indexed tokenId
-    );
+    event Cancelled(address indexed seller, BrianNFT indexed nft, uint256 indexed tokenId);
     event FeeUpdated(uint256 newFeeBps, address newFeeRecipient);
 
     function setUp() public {
@@ -97,9 +83,7 @@ contract NFTMarketTest is Test {
     }
 
     function test_Deploy_SupportsERC721Receiver() public view {
-        assertTrue(
-            market.supportsInterface(type(IERC721Receiver).interfaceId)
-        );
+        assertTrue(market.supportsInterface(type(IERC721Receiver).interfaceId));
     }
 
     // =============================================================
@@ -205,7 +189,7 @@ contract NFTMarketTest is Test {
         vm.stopPrank();
 
         // 上架信息已清除
-        (, , bool active) = market.getListing(nft, 1);
+        (,, bool active) = market.getListing(nft, 1);
         assertFalse(active);
     }
 
@@ -280,7 +264,7 @@ contract NFTMarketTest is Test {
         assertEq(nft.ownerOf(1), seller);
 
         // 上架信息已清除
-        (, , bool active) = market.getListing(nft, 1);
+        (,, bool active) = market.getListing(nft, 1);
         assertFalse(active);
     }
 
@@ -392,10 +376,7 @@ contract NFTMarketTest is Test {
     // Fuzz tests
     // =============================================================
 
-    function testFuzz_Buy_PaymentCorrect(
-        uint256 price,
-        uint256 feeBps
-    ) public {
+    function testFuzz_Buy_PaymentCorrect(uint256 price, uint256 feeBps) public {
         price = bound(price, 1 ether, 10000 ether);
         feeBps = bound(feeBps, 0, 1000); // 0% - 10%
 

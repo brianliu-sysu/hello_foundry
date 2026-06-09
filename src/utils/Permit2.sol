@@ -25,8 +25,7 @@ contract Permit2 is ISignatureTransfer {
         "PermitTransferFrom(TokenPermissions permitted,uint256 nonce,uint256 deadline)TokenPermissions(address token,uint256 amount)"
     );
 
-    bytes32 private constant _TOKEN_PERMISSIONS_TYPEHASH =
-        keccak256("TokenPermissions(address token,uint256 amount)");
+    bytes32 private constant _TOKEN_PERMISSIONS_TYPEHASH = keccak256("TokenPermissions(address token,uint256 amount)");
 
     bytes32 private constant _EIP712_DOMAIN_TYPEHASH =
         keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)");
@@ -43,12 +42,7 @@ contract Permit2 is ISignatureTransfer {
     /// @notice Compute EIP-712 domain separator dynamically.
     /// @dev    Non-immutable so that vm.etch to canonical address works correctly.
     function DOMAIN_SEPARATOR() public view returns (bytes32) {
-        return keccak256(abi.encode(
-            _EIP712_DOMAIN_TYPEHASH,
-            keccak256("Permit2"),
-            block.chainid,
-            address(this)
-        ));
+        return keccak256(abi.encode(_EIP712_DOMAIN_TYPEHASH, keccak256("Permit2"), block.chainid, address(this)));
     }
 
     // ================================================================
@@ -70,18 +64,11 @@ contract Permit2 is ISignatureTransfer {
         // Verify EIP-712 signature
         bytes32 domainSeparator = DOMAIN_SEPARATOR();
 
-        bytes32 tokenPermissionsHash = keccak256(abi.encode(
-            _TOKEN_PERMISSIONS_TYPEHASH,
-            permit.permitted.token,
-            permit.permitted.amount
-        ));
+        bytes32 tokenPermissionsHash =
+            keccak256(abi.encode(_TOKEN_PERMISSIONS_TYPEHASH, permit.permitted.token, permit.permitted.amount));
 
-        bytes32 structHash = keccak256(abi.encode(
-            _PERMIT_TRANSFER_FROM_TYPEHASH,
-            tokenPermissionsHash,
-            permit.nonce,
-            permit.deadline
-        ));
+        bytes32 structHash =
+            keccak256(abi.encode(_PERMIT_TRANSFER_FROM_TYPEHASH, tokenPermissionsHash, permit.nonce, permit.deadline));
 
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
 

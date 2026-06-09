@@ -26,11 +26,11 @@ contract DeflationaryToken is ERC20, ERC20Permit, Ownable {
     uint256 internal constant DEFLATION_RATE_BPS = 100; // 1% = 100 bps
     uint256 internal constant BPS_DENOMINATOR = 10000;
 
-    uint256 internal _gonsPerToken;               // gon ⇄ token 转换率（初始 PRECISION）
+    uint256 internal _gonsPerToken; // gon ⇄ token 转换率（初始 PRECISION）
     mapping(address user => uint256) internal _gonBalances; // 用户 gon 余额
-    uint256 internal _totalGons;                  // 总 gon 供应量（恒定，除非 mint/burn）
+    uint256 internal _totalGons; // 总 gon 供应量（恒定，除非 mint/burn）
 
-    uint256 public lastRebaseTime;                // 上次通缩时间戳
+    uint256 public lastRebaseTime; // 上次通缩时间戳
 
     // ======================================================================
     // EVENTS

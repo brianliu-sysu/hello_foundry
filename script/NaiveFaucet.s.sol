@@ -13,7 +13,9 @@ contract NaiveFaucetScript is Script {
     function run() public {
         vm.startBroadcast();
 
-        naiveFaucet = new NaiveFaucet(IERC20(0x6A4D5E39973b172143E94f73916E681B2F3aA639), 0xbf39fED2aEFDA4e90cBfce3BD536932A0C18CA58);
+        naiveFaucet = new NaiveFaucet(
+            IERC20(0x6A4D5E39973b172143E94f73916E681B2F3aA639), 0xbf39fED2aEFDA4e90cBfce3BD536932A0C18CA58
+        );
         _save("NaiveFaucet", address(naiveFaucet));
 
         vm.stopBroadcast();

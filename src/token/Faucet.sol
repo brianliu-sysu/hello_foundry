@@ -31,7 +31,7 @@ contract Pausable is Owner {
         require(!paused, "Contract is paused");
         _;
     }
-    
+
     function pause() public virtual onlyOwner {
         paused = true;
     }
@@ -39,13 +39,12 @@ contract Pausable is Owner {
     function unpause() public virtual onlyOwner {
         paused = false;
     }
-    
 }
 
 // 我们的第一个合约是一个水龙头！
 contract Faucet is Pausable {
-    event Withdrawal(address indexed to, uint amount);
-    event Deposit(address indexed from, uint amount);
+    event Withdrawal(address indexed to, uint256 amount);
+    event Deposit(address indexed from, uint256 amount);
     event TokenWithdrawal(address indexed to, uint256 amount);
     event TokenDeposit(address indexed from, uint256 amount);
 
@@ -71,11 +70,9 @@ contract Faucet is Pausable {
 
     // 向任何提出要求的人提供 ether
     function withdraw(uint256 _withdrawAmount, address payable _to) public whenNotPaused {
-
         // 限制每个地址一天只能提款一次（首次提款不受限）
         require(
-            lastWithdrawTime[msg.sender] == 0 ||
-            block.timestamp >= lastWithdrawTime[msg.sender] + 1 days,
+            lastWithdrawTime[msg.sender] == 0 || block.timestamp >= lastWithdrawTime[msg.sender] + 1 days,
             "Withdraw limited to once per day"
         );
 
@@ -86,7 +83,7 @@ contract Faucet is Pausable {
         lastWithdrawTime[msg.sender] = block.timestamp;
 
         // 将金额发送到请求它的地址
-        (bool success, ) = _to.call{value: _withdrawAmount}("");
+        (bool success,) = _to.call{value: _withdrawAmount}("");
         require(success, "Transfer failed");
         emit Withdrawal(_to, _withdrawAmount);
     }
@@ -108,8 +105,7 @@ contract Faucet is Pausable {
 
         // 限制每个地址一天只能提款一次（首次提款不受限）
         require(
-            lastTokenWithdrawTime[msg.sender] == 0 ||
-            block.timestamp >= lastTokenWithdrawTime[msg.sender] + 1 days,
+            lastTokenWithdrawTime[msg.sender] == 0 || block.timestamp >= lastTokenWithdrawTime[msg.sender] + 1 days,
             "Token withdraw limited to once per day"
         );
 
@@ -136,7 +132,7 @@ contract Faucet is Pausable {
     // 管理 & 接收
     // ═══════════════════════════════════════════════════════════════
 
-    function unpause() public override view onlyOwner {
+    function unpause() public view override onlyOwner {
         revert("Faucet is not paused");
     }
 

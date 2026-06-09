@@ -19,8 +19,8 @@ contract NFTMarketScript is BaseScript {
         brianNft = new BrianNFT(
             "BrianNFT",
             "BNFT",
-            "ipfs://",   // baseTokenURI
-            0             // maxSupply（0 = 无上限）
+            "ipfs://", // baseTokenURI
+            0 // maxSupply（0 = 无上限）
         );
         brianNft.safeMint(deployer, "bafybeib233ynka3n4xdtxawesq5rvvu2dtzlvhk4ca6ywhcgfx4fkj63ni");
         saveDeployment("BrianNFT", address(brianNft));
@@ -32,8 +32,8 @@ contract NFTMarketScript is BaseScript {
         // 3. 部署 NFTMarket（手续费 2.5%，手续费接收方为部署者）
         nftMarket = new NFTMarket(
             address(brianICOToken),
-            250,           // feeBps = 2.5%
-            deployer       // 手续费接收方
+            250, // feeBps = 2.5%
+            deployer // 手续费接收方
         );
         saveDeployment("NFTMarket", address(nftMarket));
 

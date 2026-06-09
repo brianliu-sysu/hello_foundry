@@ -38,16 +38,16 @@ contract DeployLendingMarketScript is BaseScript {
 
         // 2. 初始化 WETH 准备金
         market.initReserve(
-            wethAddr,              // asset
-            7500,                  // collateralFactor: 75%
-            8500,                  // liquidationThreshold: 85%
-            10500,                 // liquidationBonus: 5%
-            9,                     // flashLoanPremium: 0.09%
-            3000e8,                // price: $3000 USD (1e8)
-            0.8e27,                // optimalUtilizationRate: 80%
-            0.02e27,               // baseBorrowRate: 2%
-            0.06e27,               // slope1: 6%
-            3.0e27                 // slope2: 300% (jump rate)
+            wethAddr, // asset
+            7500, // collateralFactor: 75%
+            8500, // liquidationThreshold: 85%
+            10500, // liquidationBonus: 5%
+            9, // flashLoanPremium: 0.09%
+            3000e8, // price: $3000 USD (1e8)
+            0.8e27, // optimalUtilizationRate: 80%
+            0.02e27, // baseBorrowRate: 2%
+            0.06e27, // slope1: 6%
+            3.0e27 // slope2: 300% (jump rate)
         );
 
         vm.stopBroadcast();

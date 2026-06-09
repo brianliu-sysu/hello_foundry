@@ -73,7 +73,10 @@ contract UniswapV2ERC20 is IUniswapV2ERC20 {
         return true;
     }
 
-    function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public virtual {
+    function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
+        public
+        virtual
+    {
         require(deadline >= block.timestamp, "UniswapV2: EXPIRED");
         bytes32 digest = keccak256(
             abi.encodePacked(

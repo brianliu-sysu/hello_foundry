@@ -100,22 +100,14 @@ contract FlashArbitrageTest is Test {
     // HELPER: Get expected output for a swap (inline for clarity)
     // ======================================================================
 
-    function _getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut)
-        internal
-        pure
-        returns (uint256)
-    {
+    function _getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut) internal pure returns (uint256) {
         uint256 amountInWithFee = amountIn * 997;
         uint256 numerator = amountInWithFee * reserveOut;
         uint256 denominator = (reserveIn * 1000) + amountInWithFee;
         return numerator / denominator;
     }
 
-    function _getAmountIn(uint256 amountOut, uint256 reserveIn, uint256 reserveOut)
-        internal
-        pure
-        returns (uint256)
-    {
+    function _getAmountIn(uint256 amountOut, uint256 reserveIn, uint256 reserveOut) internal pure returns (uint256) {
         uint256 numerator = reserveIn * amountOut * 1000;
         uint256 denominator = (reserveOut - amountOut) * 997;
         return (numerator / denominator) + 1;

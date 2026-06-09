@@ -7,10 +7,8 @@ pragma solidity ^0.8.13;
 contract Proxy {
     /// @dev EIP-1967 storage slots: keccak256(…) - 1, so they don't collide
     ///      with the storage layout of any sensible implementation contract.
-    bytes32 private constant IMPLEMENTATION_SLOT =
-        0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
-    bytes32 private constant OWNER_SLOT =
-        0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103;
+    bytes32 private constant IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+    bytes32 private constant OWNER_SLOT = 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103;
 
     event Upgraded(address indexed implementation);
 

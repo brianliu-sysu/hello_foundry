@@ -3,6 +3,7 @@ pragma solidity ^0.8.26;
 
 contract CalledContract {
     event callEvent(address sender, address origin, address from);
+
     function calledFunction() public returns (address sender, address origin, address from) {
         sender = msg.sender;
         origin = tx.origin;
@@ -17,12 +18,13 @@ library CalledLibrary {
         return (msg.sender, tx.origin, address(this));
     }
 }
+
 contract Caller {
     function makeCalls(CalledContract _calledContract) public {
         (address sender, address origin, address from) = _calledContract.calledFunction();
-        (bool res, ) = address(_calledContract).call(abi.encodeWithSignature("calledFunction()"));
+        (bool res,) = address(_calledContract).call(abi.encodeWithSignature("calledFunction()"));
         require(res, "call failed");
-        (res, ) = address(_calledContract).delegatecall(abi.encodeWithSignature("calledFunction()"));
+        (res,) = address(_calledContract).delegatecall(abi.encodeWithSignature("calledFunction()"));
         require(res, "delegatecall failed");
         (sender, origin, from) = CalledLibrary.calledFunction();
     }

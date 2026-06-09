@@ -15,7 +15,6 @@ contract ProxyScript is BaseScript {
         counter = new Counter();
         saveDeployment("Counter", address(counter));
 
-
         proxy = new Proxy(address(counter));
         saveDeployment("Proxy", address(proxy));
 

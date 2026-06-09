@@ -23,12 +23,10 @@ contract MemeToken is ERC20, Ownable, Initializable {
     /// @param symbol_     代币符号
     /// @param totalSupply_ 初始供应量（全部 mint 给 owner_）
     /// @param owner_       代币持有者及 owner
-    function initialize(
-        string calldata name_,
-        string calldata symbol_,
-        uint256 totalSupply_,
-        address owner_
-    ) external initializer {
+    function initialize(string calldata name_, string calldata symbol_, uint256 totalSupply_, address owner_)
+        external
+        initializer
+    {
         require(totalSupply_ > 0, "MemeToken: supply must be > 0");
         require(owner_ != address(0), "MemeToken: owner cannot be zero");
 

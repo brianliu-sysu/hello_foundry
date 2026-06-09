@@ -36,13 +36,7 @@ contract TestVesting is Test {
 
         // Owner deploys the vesting contract
         vm.prank(owner);
-        vesting = new Vesting(
-            address(token),
-            beneficiary,
-            TOTAL_VESTING,
-            CLIFF_DURATION,
-            UNLOCK_PERIOD
-        );
+        vesting = new Vesting(address(token), beneficiary, TOTAL_VESTING, CLIFF_DURATION, UNLOCK_PERIOD);
 
         // Transfer 1M tokens into the vesting contract (模拟"创建合约后打入100万token")
         vm.prank(owner);
@@ -345,13 +339,7 @@ contract TestVesting is Test {
         // Use an amount not cleanly divisible by 24
         uint256 oddAmount = 1_000_000 * 1e18 + 23; // remainder 23 wei
         vm.prank(owner);
-        Vesting vesting2 = new Vesting(
-            address(token),
-            beneficiary,
-            oddAmount,
-            CLIFF_DURATION,
-            UNLOCK_PERIOD
-        );
+        Vesting vesting2 = new Vesting(address(token), beneficiary, oddAmount, CLIFF_DURATION, UNLOCK_PERIOD);
         vm.prank(owner);
         token.transfer(address(vesting2), oddAmount);
 
@@ -381,13 +369,7 @@ contract TestVesting is Test {
         uint256 shortPeriod = 1 days;
 
         vm.prank(owner);
-        Vesting vestingShort = new Vesting(
-            address(token),
-            beneficiary,
-            TOTAL_VESTING,
-            shortCliff,
-            shortPeriod
-        );
+        Vesting vestingShort = new Vesting(address(token), beneficiary, TOTAL_VESTING, shortCliff, shortPeriod);
         vm.prank(owner);
         token.transfer(address(vestingShort), TOTAL_VESTING);
 
@@ -414,7 +396,7 @@ contract TestVesting is Test {
         vm.deal(stranger, 1 ether);
         vm.prank(stranger);
         // Low-level call to a contract without receive() — internal revert caught
-        (bool ok, ) = address(vesting).call{value: 1 ether}("");
+        (bool ok,) = address(vesting).call{value: 1 ether}("");
         assertFalse(ok);
         assertEq(address(vesting).balance, 0);
     }

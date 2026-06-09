@@ -48,27 +48,13 @@ contract NFTMarket is IERC721Receiver, ERC165, Ownable {
     // 事件
     // =============================================================
 
-    event Listed(
-        address indexed seller,
-        IERC721 indexed nft,
-        uint256 indexed tokenId,
-        uint256 price
-    );
+    event Listed(address indexed seller, IERC721 indexed nft, uint256 indexed tokenId, uint256 price);
 
     event Sold(
-        address indexed seller,
-        address indexed buyer,
-        IERC721 indexed nft,
-        uint256 tokenId,
-        uint256 price,
-        uint256 fee
+        address indexed seller, address indexed buyer, IERC721 indexed nft, uint256 tokenId, uint256 price, uint256 fee
     );
 
-    event Cancelled(
-        address indexed seller,
-        IERC721 indexed nft,
-        uint256 indexed tokenId
-    );
+    event Cancelled(address indexed seller, IERC721 indexed nft, uint256 indexed tokenId);
 
     event FeeUpdated(uint256 newFeeBps, address newFeeRecipient);
 
@@ -79,11 +65,7 @@ contract NFTMarket is IERC721Receiver, ERC165, Ownable {
     /// @param paymentToken_  支付代币地址（BrianICOToken / BIT）
     /// @param feeBps_        初始手续费基点（0 表示无手续费）
     /// @param feeRecipient_  手续费接收地址
-    constructor(
-        address paymentToken_,
-        uint256 feeBps_,
-        address feeRecipient_
-    ) Ownable(msg.sender) {
+    constructor(address paymentToken_, uint256 feeBps_, address feeRecipient_) Ownable(msg.sender) {
         require(paymentToken_ != address(0), "Market: zero payment token");
         require(feeBps_ <= 10000, "Market: fee exceeds 100%");
         require(feeRecipient_ != address(0), "Market: zero fee recipient");
@@ -109,12 +91,7 @@ contract NFTMarket is IERC721Receiver, ERC165, Ownable {
         // 将 NFT 转入本合约托管
         nft.safeTransferFrom(msg.sender, address(this), tokenId);
 
-        _listings[nft][tokenId] = Listing({
-            seller: msg.sender,
-            price: price,
-            nft: nft,
-            active: true
-        });
+        _listings[nft][tokenId] = Listing({seller: msg.sender, price: price, nft: nft, active: true});
 
         emit Listed(msg.sender, nft, tokenId, price);
     }
@@ -139,16 +116,10 @@ contract NFTMarket is IERC721Receiver, ERC165, Ownable {
         delete _listings[nft][tokenId];
 
         // 转账支付代币：买家 → 卖家（扣除手续费）
-        require(
-            paymentToken.transferFrom(msg.sender, seller, sellerProceeds),
-            "Market: payment to seller failed"
-        );
+        require(paymentToken.transferFrom(msg.sender, seller, sellerProceeds), "Market: payment to seller failed");
         // 手续费：买家 → 手续费接收方
         if (fee > 0) {
-            require(
-                paymentToken.transferFrom(msg.sender, feeRecipient, fee),
-                "Market: fee transfer failed"
-            );
+            require(paymentToken.transferFrom(msg.sender, feeRecipient, fee), "Market: fee transfer failed");
         }
 
         // 将 NFT 从本合约转给买家
@@ -199,10 +170,11 @@ contract NFTMarket is IERC721Receiver, ERC165, Ownable {
     /// @return seller 卖家地址
     /// @return price  售价
     /// @return active 是否在售
-    function getListing(
-        IERC721 nft,
-        uint256 tokenId
-    ) external view returns (address seller, uint256 price, bool active) {
+    function getListing(IERC721 nft, uint256 tokenId)
+        external
+        view
+        returns (address seller, uint256 price, bool active)
+    {
         Listing storage listing = _listings[nft][tokenId];
         return (listing.seller, listing.price, listing.active);
     }
@@ -213,12 +185,7 @@ contract NFTMarket is IERC721Receiver, ERC165, Ownable {
 
     /// @notice 接收 ERC721 安全转账的回调
     /// @dev 仅返回 selector，表示接受所有 ERC721 转入
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    ) external pure override returns (bytes4) {
+    function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4) {
         return IERC721Receiver.onERC721Received.selector;
     }
 
@@ -227,11 +194,7 @@ contract NFTMarket is IERC721Receiver, ERC165, Ownable {
     // =============================================================
 
     /// @notice 检查合约是否支持指定接口
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(ERC165) returns (bool) {
-        return
-            interfaceId == type(IERC721Receiver).interfaceId ||
-            super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165) returns (bool) {
+        return interfaceId == type(IERC721Receiver).interfaceId || super.supportsInterface(interfaceId);
     }
 }

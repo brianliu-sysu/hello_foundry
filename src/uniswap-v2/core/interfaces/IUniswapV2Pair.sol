@@ -34,5 +34,6 @@ interface IUniswapV2Pair {
     function initialize(address, address) external;
 
     // ERC20 permit (used by Router for removeLiquidityWithPermit)
-    function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external;
+    function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
+        external;
 }

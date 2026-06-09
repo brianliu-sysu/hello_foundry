@@ -45,27 +45,26 @@ contract Permit2Test is Test {
     // ── Helpers ────────────────────────────────────────────────
 
     /// @dev Sign a PermitTransferFrom message, using the Permit2's own DOMAIN_SEPARATOR
-    function _signPermit2(
-        uint256 signerPrivateKey,
-        address tokenAddr,
-        uint256 amount,
-        uint256 nonce,
-        uint256 deadline
-    ) internal view returns (bytes memory signature) {
+    function _signPermit2(uint256 signerPrivateKey, address tokenAddr, uint256 amount, uint256 nonce, uint256 deadline)
+        internal
+        view
+        returns (bytes memory signature)
+    {
         bytes32 domainSeparator = Permit2(payable(PERMIT2_ADDRESS)).DOMAIN_SEPARATOR();
 
-        bytes32 tokenPermissionsHash = keccak256(abi.encode(
-            keccak256("TokenPermissions(address token,uint256 amount)"),
-            tokenAddr,
-            amount
-        ));
+        bytes32 tokenPermissionsHash =
+            keccak256(abi.encode(keccak256("TokenPermissions(address token,uint256 amount)"), tokenAddr, amount));
 
-        bytes32 structHash = keccak256(abi.encode(
-            keccak256("PermitTransferFrom(TokenPermissions permitted,uint256 nonce,uint256 deadline)TokenPermissions(address token,uint256 amount)"),
-            tokenPermissionsHash,
-            nonce,
-            deadline
-        ));
+        bytes32 structHash = keccak256(
+            abi.encode(
+                keccak256(
+                    "PermitTransferFrom(TokenPermissions permitted,uint256 nonce,uint256 deadline)TokenPermissions(address token,uint256 amount)"
+                ),
+                tokenPermissionsHash,
+                nonce,
+                deadline
+            )
+        );
 
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(signerPrivateKey, digest);
@@ -73,7 +72,8 @@ contract Permit2Test is Test {
     }
 
     function _permit(address tokenAddr, uint256 amount, uint256 nonce, uint256 deadline)
-        internal pure
+        internal
+        pure
         returns (ISignatureTransfer.PermitTransferFrom memory)
     {
         return ISignatureTransfer.PermitTransferFrom({
@@ -84,7 +84,8 @@ contract Permit2Test is Test {
     }
 
     function _details(address to, uint256 amount)
-        internal pure
+        internal
+        pure
         returns (ISignatureTransfer.SignatureTransferDetails memory)
     {
         return ISignatureTransfer.SignatureTransferDetails({to: to, requestedAmount: amount});
@@ -100,12 +101,14 @@ contract Permit2Test is Test {
     }
 
     function test_DomainSeparator_MatchesComputed() public view {
-        bytes32 expected = keccak256(abi.encode(
-            keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)"),
-            keccak256("Permit2"),
-            block.chainid,
-            PERMIT2_ADDRESS
-        ));
+        bytes32 expected = keccak256(
+            abi.encode(
+                keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)"),
+                keccak256("Permit2"),
+                block.chainid,
+                PERMIT2_ADDRESS
+            )
+        );
         assertEq(Permit2(payable(PERMIT2_ADDRESS)).DOMAIN_SEPARATOR(), expected);
     }
 
@@ -119,12 +122,8 @@ contract Permit2Test is Test {
 
         bytes memory sig = _signPermit2(alicePrivateKey, address(token), amount, 0, deadline);
 
-        ISignatureTransfer(PERMIT2_ADDRESS).permitTransferFrom(
-            _permit(address(token), amount, 0, deadline),
-            _details(bob, amount),
-            alice,
-            sig
-        );
+        ISignatureTransfer(PERMIT2_ADDRESS)
+            .permitTransferFrom(_permit(address(token), amount, 0, deadline), _details(bob, amount), alice, sig);
 
         assertEq(token.balanceOf(bob), amount);
         assertEq(token.balanceOf(alice), INITIAL_SUPPLY - amount);
@@ -136,12 +135,8 @@ contract Permit2Test is Test {
 
         bytes memory sig = _signPermit2(alicePrivateKey, address(token), amount, 0, deadline);
 
-        ISignatureTransfer(PERMIT2_ADDRESS).permitTransferFrom(
-            _permit(address(token), amount, 0, deadline),
-            _details(bob, amount),
-            alice,
-            sig
-        );
+        ISignatureTransfer(PERMIT2_ADDRESS)
+            .permitTransferFrom(_permit(address(token), amount, 0, deadline), _details(bob, amount), alice, sig);
 
         assertTrue(Permit2(payable(PERMIT2_ADDRESS)).nonceUsed(alice, 0));
     }
@@ -155,12 +150,8 @@ contract Permit2Test is Test {
         vm.warp(block.timestamp + 2);
 
         vm.expectRevert("Permit2: deadline expired");
-        ISignatureTransfer(PERMIT2_ADDRESS).permitTransferFrom(
-            _permit(address(token), amount, 0, deadline),
-            _details(bob, amount),
-            alice,
-            sig
-        );
+        ISignatureTransfer(PERMIT2_ADDRESS)
+            .permitTransferFrom(_permit(address(token), amount, 0, deadline), _details(bob, amount), alice, sig);
     }
 
     function test_PermitTransferFrom_RevertNonceReuse() public {
@@ -170,21 +161,13 @@ contract Permit2Test is Test {
         bytes memory sig = _signPermit2(alicePrivateKey, address(token), amount, 0, deadline);
 
         // First use succeeds
-        ISignatureTransfer(PERMIT2_ADDRESS).permitTransferFrom(
-            _permit(address(token), amount, 0, deadline),
-            _details(bob, amount),
-            alice,
-            sig
-        );
+        ISignatureTransfer(PERMIT2_ADDRESS)
+            .permitTransferFrom(_permit(address(token), amount, 0, deadline), _details(bob, amount), alice, sig);
 
         // Second use with same nonce fails
         vm.expectRevert("Permit2: nonce already used");
-        ISignatureTransfer(PERMIT2_ADDRESS).permitTransferFrom(
-            _permit(address(token), amount, 0, deadline),
-            _details(bob, amount),
-            alice,
-            sig
-        );
+        ISignatureTransfer(PERMIT2_ADDRESS)
+            .permitTransferFrom(_permit(address(token), amount, 0, deadline), _details(bob, amount), alice, sig);
     }
 
     function test_PermitTransferFrom_RevertInvalidSignature() public {
@@ -195,12 +178,13 @@ contract Permit2Test is Test {
         bytes memory sig = _signPermit2(uint256(0xB0B), address(token), amount, 0, deadline);
 
         vm.expectRevert("Permit2: invalid signature");
-        ISignatureTransfer(PERMIT2_ADDRESS).permitTransferFrom(
-            _permit(address(token), amount, 0, deadline),
-            _details(bob, amount),
-            alice, // alice did NOT sign this
-            sig
-        );
+        ISignatureTransfer(PERMIT2_ADDRESS)
+            .permitTransferFrom(
+                _permit(address(token), amount, 0, deadline),
+                _details(bob, amount),
+                alice, // alice did NOT sign this
+                sig
+            );
     }
 
     // =============================================================

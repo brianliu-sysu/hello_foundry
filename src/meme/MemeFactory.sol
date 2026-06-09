@@ -18,13 +18,7 @@ contract MemeFactory {
 
     // ── Events ────────────────────────────────────────────────
 
-    event MemeCreated(
-        string name,
-        string symbol,
-        uint256 totalSupply,
-        address indexed creator,
-        address indexed token
-    );
+    event MemeCreated(string name, string symbol, uint256 totalSupply, address indexed creator, address indexed token);
 
     // ── Constructor ───────────────────────────────────────────
 
@@ -41,11 +35,10 @@ contract MemeFactory {
     /// @param symbol_     代币符号
     /// @param totalSupply_ 初始供应量（全部 mint 给 msg.sender）
     /// @return clone       新 meme token 地址
-    function createMeme(
-        string calldata name_,
-        string calldata symbol_,
-        uint256 totalSupply_
-    ) external returns (address clone) {
+    function createMeme(string calldata name_, string calldata symbol_, uint256 totalSupply_)
+        external
+        returns (address clone)
+    {
         // 1. 部署最小代理（EIP-1167 clone）
         clone = address(memeTokenImpl).clone();
 
@@ -86,5 +79,4 @@ contract MemeFactory {
             page[i] = memeTokens[offset + i];
         }
     }
-
 }

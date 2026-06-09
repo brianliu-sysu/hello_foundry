@@ -27,7 +27,11 @@ contract MockFlashLoanReceiver is IFlashLoanReceiver {
         uint256 amount,
         uint256 premium,
         bytes calldata /*params*/
-    ) external override returns (bool) {
+    )
+        external
+        override
+        returns (bool)
+    {
         lastInitiator = initiator;
         lastAsset = asset;
         lastAmount = amount;
@@ -99,8 +103,8 @@ contract LendingMarketTest is Test {
         flashReceiver = new MockFlashLoanReceiver();
 
         // Initialize reserves for both tokens
-        _initReserve(address(tokenA), 7500, 8500, 10500, 9, 1e8);  // $1 USD price
-        _initReserve(address(tokenB), 7500, 8500, 10500, 9, 2e8);  // $2 USD price
+        _initReserve(address(tokenA), 7500, 8500, 10500, 9, 1e8); // $1 USD price
+        _initReserve(address(tokenB), 7500, 8500, 10500, 9, 2e8); // $2 USD price
 
         // Fund users
         vm.startPrank(owner);
@@ -117,26 +121,19 @@ contract LendingMarketTest is Test {
     // HELPER
     // ======================================================================
 
-    function _initReserve(
-        address asset,
-        uint256 cf,
-        uint256 lt,
-        uint256 lb,
-        uint256 flp,
-        uint256 price
-    ) internal {
+    function _initReserve(address asset, uint256 cf, uint256 lt, uint256 lb, uint256 flp, uint256 price) internal {
         vm.prank(owner);
         market.initReserve(
-            asset,     // asset
-            cf,        // collateralFactor
-            lt,        // liquidationThreshold
-            lb,        // liquidationBonus
-            flp,       // flashLoanPremium
-            price,     // price
-            0.8e27,    // optimalUtilizationRate: 80%
-            0.02e27,   // baseBorrowRate: 2%
-            0.06e27,   // slope1: 6%
-            3.0e27     // slope2: 300%
+            asset, // asset
+            cf, // collateralFactor
+            lt, // liquidationThreshold
+            lb, // liquidationBonus
+            flp, // flashLoanPremium
+            price, // price
+            0.8e27, // optimalUtilizationRate: 80%
+            0.02e27, // baseBorrowRate: 2%
+            0.06e27, // slope1: 6%
+            3.0e27 // slope2: 300%
         );
     }
 
@@ -494,13 +491,10 @@ contract LendingMarketTest is Test {
         // Carol liquidates: covers 200 tokenB of debt
         vm.startPrank(carol);
         uint256 debtToCover = 200 ether;
-        uint256 expectedCollateral =
-            (debtToCover * 2e8 * 10500) / (0.6e8 * BPS); // (200 * 2 * 10500) / (0.6 * 10000) = 700 tokenA
+        uint256 expectedCollateral = (debtToCover * 2e8 * 10500) / (0.6e8 * BPS); // (200 * 2 * 10500) / (0.6 * 10000) = 700 tokenA
 
         vm.expectEmit(true, true, false, false);
-        emit Liquidated(
-            carol, alice, address(tokenA), address(tokenB), debtToCover, expectedCollateral
-        );
+        emit Liquidated(carol, alice, address(tokenA), address(tokenB), debtToCover, expectedCollateral);
         market.liquidate(address(tokenA), address(tokenB), alice, debtToCover);
         vm.stopPrank();
 
@@ -557,14 +551,7 @@ contract LendingMarketTest is Test {
         vm.prank(alice);
         market.setUserUseAsCollateral(address(tokenA), true);
 
-        (
-            uint256 totalCollateralUSD,
-            uint256 totalDebtUSD,
-            ,
-            ,
-            ,
-            uint256 healthFactor
-        ) = market.getUserAccountData(alice);
+        (uint256 totalCollateralUSD, uint256 totalDebtUSD,,,, uint256 healthFactor) = market.getUserAccountData(alice);
 
         // 1000 tokens * $1 (price=1e8) / 1e8 = 1000e18 wei-equivalent
         assertEq(totalCollateralUSD, 1000 ether);
@@ -588,8 +575,7 @@ contract LendingMarketTest is Test {
         (
             uint256 totalCollateralUSD,
             uint256 totalDebtUSD,
-            uint256 availableBorrowsUSD,
-            ,
+            uint256 availableBorrowsUSD,,
             uint256 ltv,
             uint256 healthFactor
         ) = market.getUserAccountData(alice);
@@ -598,8 +584,8 @@ contract LendingMarketTest is Test {
         assertEq(totalCollateralUSD, 1000 ether);
         // 100 tokenB * $2 = 200e18
         assertEq(totalDebtUSD, 200 ether);
-        assertEq(ltv, 7500);                // 75%
-        assertGt(healthFactor, RAY);        // > 1.0
+        assertEq(ltv, 7500); // 75%
+        assertGt(healthFactor, RAY); // > 1.0
         assertGt(availableBorrowsUSD, 0);
     }
 

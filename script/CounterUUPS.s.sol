@@ -20,10 +20,7 @@ contract CounterUUPSScript is BaseScript {
         // 1. 部署 V1 实现
         counterV1 = new CounterV1Upgradeable();
         // 2. 部署代理，指向 V1，calldata = initialize()
-        proxy = new ERC1967Proxy(
-            address(counterV1),
-            abi.encodeCall(CounterV1Upgradeable.initialize, ())
-        );
+        proxy = new ERC1967Proxy(address(counterV1), abi.encodeCall(CounterV1Upgradeable.initialize, ()));
         saveDeployment("CounterUUPS_Proxy", address(proxy));
         saveDeployment("CounterUUPS_V1", address(counterV1));
 
@@ -36,10 +33,11 @@ contract CounterUUPSScript is BaseScript {
         // 3. 部署 V2 实现
         counterV2 = new CounterV2Upgradeable();
         // 4. 通过 proxy 调用 upgradeToAndCall（UUPS 自带的升级方法）
-        CounterV1Upgradeable(address(proxy)).upgradeToAndCall(
-            address(counterV2),
-            "" // 不需要再次 initialize
-        );
+        CounterV1Upgradeable(address(proxy))
+            .upgradeToAndCall(
+                address(counterV2),
+                "" // 不需要再次 initialize
+            );
         saveDeployment("CounterUUPS_V2", address(counterV2));
 
         vm.stopBroadcast();

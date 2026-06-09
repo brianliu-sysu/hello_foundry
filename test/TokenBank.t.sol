@@ -28,25 +28,25 @@ contract MockPermit2 {
         require(block.timestamp <= permit.deadline, "Permit2: deadline expired");
         require(!nonceUsed[owner][permit.nonce], "Permit2: nonce already used");
 
-        bytes32 domainSeparator = keccak256(abi.encode(
-            keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)"),
-            keccak256("Permit2"),
-            block.chainid,
-            address(this)
-        ));
+        bytes32 domainSeparator = keccak256(
+            abi.encode(
+                keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)"),
+                keccak256("Permit2"),
+                block.chainid,
+                address(this)
+            )
+        );
 
-        bytes32 tokenPermissionsHash = keccak256(abi.encode(
-            keccak256("TokenPermissions(address token,uint256 amount)"),
-            permit.permitted.token,
-            permit.permitted.amount
-        ));
+        bytes32 tokenPermissionsHash = keccak256(
+            abi.encode(
+                keccak256("TokenPermissions(address token,uint256 amount)"),
+                permit.permitted.token,
+                permit.permitted.amount
+            )
+        );
 
-        bytes32 structHash = keccak256(abi.encode(
-            _PERMIT_TRANSFER_FROM_TYPEHASH,
-            tokenPermissionsHash,
-            permit.nonce,
-            permit.deadline
-        ));
+        bytes32 structHash =
+            keccak256(abi.encode(_PERMIT_TRANSFER_FROM_TYPEHASH, tokenPermissionsHash, permit.nonce, permit.deadline));
 
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
 
@@ -113,40 +113,39 @@ contract TokenBankTest is Test {
         uint256 deadline
     ) internal view returns (uint8 v, bytes32 r, bytes32 s) {
         bytes32 domainSeparator = token.DOMAIN_SEPARATOR();
-        bytes32 structHash = keccak256(
-            abi.encode(PERMIT_TYPEHASH, owner, spender, value, nonce, deadline)
-        );
+        bytes32 structHash = keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, nonce, deadline));
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
         return vm.sign(signerPrivateKey, digest);
     }
 
     /// @dev 构建 Permit2 PermitTransferFrom EIP-712 签名（返回 r||s||v 的 bytes）
-    function _signPermit2(
-        uint256 signerPrivateKey,
-        address tokenAddr,
-        uint256 amount,
-        uint256 nonce,
-        uint256 deadline
-    ) internal view returns (bytes memory signature) {
-        bytes32 domainSeparator = keccak256(abi.encode(
-            keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)"),
-            keccak256("Permit2"),
-            block.chainid,
-            PERMIT2_ADDRESS
-        ));
+    function _signPermit2(uint256 signerPrivateKey, address tokenAddr, uint256 amount, uint256 nonce, uint256 deadline)
+        internal
+        view
+        returns (bytes memory signature)
+    {
+        bytes32 domainSeparator = keccak256(
+            abi.encode(
+                keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)"),
+                keccak256("Permit2"),
+                block.chainid,
+                PERMIT2_ADDRESS
+            )
+        );
 
-        bytes32 tokenPermissionsHash = keccak256(abi.encode(
-            keccak256("TokenPermissions(address token,uint256 amount)"),
-            tokenAddr,
-            amount
-        ));
+        bytes32 tokenPermissionsHash =
+            keccak256(abi.encode(keccak256("TokenPermissions(address token,uint256 amount)"), tokenAddr, amount));
 
-        bytes32 structHash = keccak256(abi.encode(
-            keccak256("PermitTransferFrom(TokenPermissions permitted,uint256 nonce,uint256 deadline)TokenPermissions(address token,uint256 amount)"),
-            tokenPermissionsHash,
-            nonce,
-            deadline
-        ));
+        bytes32 structHash = keccak256(
+            abi.encode(
+                keccak256(
+                    "PermitTransferFrom(TokenPermissions permitted,uint256 nonce,uint256 deadline)TokenPermissions(address token,uint256 amount)"
+                ),
+                tokenPermissionsHash,
+                nonce,
+                deadline
+            )
+        );
 
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(signerPrivateKey, digest);
@@ -340,9 +339,7 @@ contract TokenBankTest is Test {
     // Fuzz tests
     // =============================================================
 
-    function testFuzz_TransferAndCall_DepositAmount(
-        uint256 amount
-    ) public {
+    function testFuzz_TransferAndCall_DepositAmount(uint256 amount) public {
         amount = bound(amount, 1, INITIAL_SUPPLY);
 
         vm.prank(alice);
@@ -351,10 +348,7 @@ contract TokenBankTest is Test {
         assertEq(bank.deposits(alice, address(token)), amount);
     }
 
-    function testFuzz_DepositThenWithdraw(
-        uint256 depositAmount,
-        uint256 withdrawAmount
-    ) public {
+    function testFuzz_DepositThenWithdraw(uint256 depositAmount, uint256 withdrawAmount) public {
         depositAmount = bound(depositAmount, 1, INITIAL_SUPPLY);
         withdrawAmount = bound(withdrawAmount, 1, depositAmount);
 
@@ -388,9 +382,7 @@ contract TokenBankTest is Test {
         uint256 deadline = block.timestamp + 1 hours;
         uint256 nonce = token.nonces(alice);
 
-        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
-            alicePrivateKey, alice, address(bank), amount, nonce, deadline
-        );
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(alicePrivateKey, alice, address(bank), amount, nonce, deadline);
 
         // Anyone can call permit (alice herself in this case)
         vm.prank(alice);
@@ -404,9 +396,7 @@ contract TokenBankTest is Test {
         uint256 deadline = block.timestamp + 1;
         uint256 nonce = token.nonces(alice);
 
-        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
-            alicePrivateKey, alice, address(bank), amount, nonce, deadline
-        );
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(alicePrivateKey, alice, address(bank), amount, nonce, deadline);
 
         // 快进到 deadline 之后
         vm.warp(block.timestamp + 2);
@@ -422,9 +412,7 @@ contract TokenBankTest is Test {
 
         assertEq(token.nonces(alice), 0);
 
-        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
-            alicePrivateKey, alice, address(bank), amount, 0, deadline
-        );
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(alicePrivateKey, alice, address(bank), amount, 0, deadline);
         vm.prank(alice);
         token.permit(alice, address(bank), amount, deadline, v, r, s);
 
@@ -446,9 +434,7 @@ contract TokenBankTest is Test {
         uint256 nonce = token.nonces(alice);
 
         // alice 离线签名，授权 bank 花费她的 token
-        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
-            alicePrivateKey, alice, address(bank), amount, nonce, deadline
-        );
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(alicePrivateKey, alice, address(bank), amount, nonce, deadline);
 
         // 任何人（如 relayer）都可以代为提交
         vm.prank(address(0x5E1a6e5eA1ab));
@@ -464,9 +450,7 @@ contract TokenBankTest is Test {
         uint256 deadline = block.timestamp + 1 hours;
         uint256 nonce = token.nonces(alice);
 
-        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
-            alicePrivateKey, alice, address(bank), amount, nonce, deadline
-        );
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(alicePrivateKey, alice, address(bank), amount, nonce, deadline);
 
         // relayer 调用，但存款应归属 alice
         vm.prank(bob);
@@ -482,9 +466,7 @@ contract TokenBankTest is Test {
         uint256 deadline = block.timestamp + 1 hours;
         uint256 nonce = token.nonces(alice);
 
-        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
-            alicePrivateKey, alice, address(bank), amount, nonce, deadline
-        );
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(alicePrivateKey, alice, address(bank), amount, nonce, deadline);
 
         vm.expectEmit(true, true, false, true);
         emit TokenBank.Deposited(address(token), alice, amount);
@@ -496,9 +478,7 @@ contract TokenBankTest is Test {
         uint256 deadline = block.timestamp + 1 hours;
         uint256 nonce = token.nonces(alice);
 
-        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
-            alicePrivateKey, alice, address(bank), 0, nonce, deadline
-        );
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(alicePrivateKey, alice, address(bank), 0, nonce, deadline);
 
         vm.expectRevert("TokenBank: amount must be > 0");
         bank.permitDeposit(alice, address(token), 0, deadline, v, r, s);
@@ -509,9 +489,7 @@ contract TokenBankTest is Test {
         uint256 deadline = block.timestamp + 1;
         uint256 nonce = token.nonces(alice);
 
-        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
-            alicePrivateKey, alice, address(bank), amount, nonce, deadline
-        );
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(alicePrivateKey, alice, address(bank), amount, nonce, deadline);
 
         vm.warp(block.timestamp + 2);
 
@@ -525,15 +503,11 @@ contract TokenBankTest is Test {
         uint256 deadline = block.timestamp + 1 hours;
 
         // 第一笔
-        (uint8 v1, bytes32 r1, bytes32 s1) = _signPermit(
-            alicePrivateKey, alice, address(bank), amount1, 0, deadline
-        );
+        (uint8 v1, bytes32 r1, bytes32 s1) = _signPermit(alicePrivateKey, alice, address(bank), amount1, 0, deadline);
         bank.permitDeposit(alice, address(token), amount1, deadline, v1, r1, s1);
 
         // 第二笔（nonce 自动增加）
-        (uint8 v2, bytes32 r2, bytes32 s2) = _signPermit(
-            alicePrivateKey, alice, address(bank), amount2, 1, deadline
-        );
+        (uint8 v2, bytes32 r2, bytes32 s2) = _signPermit(alicePrivateKey, alice, address(bank), amount2, 1, deadline);
         bank.permitDeposit(alice, address(token), amount2, deadline, v2, r2, s2);
 
         assertEq(bank.deposits(alice, address(token)), amount1 + amount2);
@@ -545,9 +519,7 @@ contract TokenBankTest is Test {
         uint256 deadline = block.timestamp + 1 hours;
         uint256 nonce = token.nonces(alice);
 
-        (uint8 v, bytes32 r, bytes32 s) = _signPermit(
-            alicePrivateKey, alice, address(bank), amount, nonce, deadline
-        );
+        (uint8 v, bytes32 r, bytes32 s) = _signPermit(alicePrivateKey, alice, address(bank), amount, nonce, deadline);
 
         bank.permitDeposit(alice, address(token), amount, deadline, v, r, s);
 
