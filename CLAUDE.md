@@ -56,22 +56,57 @@ const reserve0 = reserves[0]; // not reserves.reserve0
 
 `foundry.toml` has `via_ir = true` enabled to fix "Stack too deep" errors in complex contracts (FlashArbitrage, AaveFlashArbitrage). This changes Solidity's compilation pipeline — always run `forge clean && forge build` after modifying contracts, and rerun the full suite to catch stale cache issues.
 
-## 📁 Source Architecture
+## 📁 Source Architecture (contracts grouped by domain)
 
 ```
 src/
-├── FlashArbitrage.sol       # Uniswap V2 Flash Swap arbitrage
-├── AaveFlashArbitrage.sol   # Aave v3 Flash Loan arbitrage
-├── LendingMarket.sol        # Multi-asset lending + flash loans
-├── StakingPool.sol          # ETH staking → KK rewards + LendingMarket
-├── KKToken.sol              # StakingPool reward token
+├── arbitrage/
+│   ├── FlashArbitrage.sol       # Uniswap V2 Flash Swap arbitrage
+│   └── AaveFlashArbitrage.sol   # Aave v3 Flash Loan → Uniswap V2 arbitrage
+├── lending/
+│   └── LendingMarket.sol        # Multi-asset lending + flash loans
+├── staking/
+│   ├── StakingPool.sol          # ETH staking → KK rewards + LendingMarket
+│   └── KKToken.sol              # StakingPool reward token (10 KK/block)
+├── token/
+│   ├── BrianICOToken.sol        # ERC1363 + ERC20Permit test token
+│   ├── Token.sol                # Faucet-based token
+│   ├── TokenBank.sol            # ERC1363Receiver bank
+│   ├── Faucet.sol               # ETH + token faucet
+│   ├── NaiveFaucet.sol          # Simpler faucet variant
+│   └── Vesting.sol              # Linear vesting with cliff
+├── nft/
+│   ├── BrianNFT.sol             # ERC721 NFT
+│   └── NFTMarket.sol            # NFT marketplace
+├── meme/
+│   ├── MemeFactory.sol          # EIP-1167 Minimal Proxy factory
+│   └── MemeToken.sol            # Meme token implementation
+├── counter/
+│   ├── Counter.sol              # Simple counter
+│   ├── CounterV1Upgradeable.sol # UUPS upgradeable counter V1
+│   ├── CounterV2Upgradeable.sol # UUPS upgradeable counter V2
+│   └── proxy.sol                # Proxy contract
+├── delegation/
+│   ├── BatchTransferDelegation.sol  # EIP-7702 batch transfer
+│   └── GasSponsorDelegation.sol     # Gas sponsorship delegation
+├── utils/
+│   ├── Call.sol                 # Low-level call utility
+│   ├── Permit2.sol              # Permit2 integration
+│   └── ISignatureTransfer.sol   # Permit2 signature interface
 ├── shared/
-│   ├── AdminWithdrawable.sol  # withdrawETH / withdrawToken base contract
-│   └── UniswapV2Helper.sol    # Uniswap V2 math / swap / safeTransfer library
-├── uniswap-v2/              # Forked Uniswap V2 (pragma ^0.8.0)
-├── BrianICOToken.sol        # ERC1363 + ERC20Permit test token
-└── ...other contracts...
+│   ├── AdminWithdrawable.sol    # withdrawETH / withdrawToken base (Ownable)
+│   └── UniswapV2Helper.sol      # library: V2 math / swap / safeTransfer
+└── uniswap-v2/                  # Forked Uniswap V2 (pragma ^0.8.0)
+    ├── core/                    # Factory, Pair, ERC20, interfaces, libraries
+    └── periphery/               # Router02, WETH9, interfaces, libraries
 ```
+
+**Import conventions:**
+- Contracts import siblings with `import "./XSibling.sol"` (e.g. `MemeFactory → MemeToken`)
+- Cross-domain imports use relative paths: `import {KKToken} from "../staking/KKToken.sol"`
+- `shared/` imports: `import {UniswapV2Helper} from "../shared/UniswapV2Helper.sol"`
+- `uniswap-v2/` imports: `import {IUniswapV2Pair} from "../uniswap-v2/core/interfaces/IUniswapV2Pair.sol"`
+- When adding a **new contract**, place it in the matching domain folder. Create a new folder only if it's a genuinely new domain.
 
 ## 🧪 Testing Patterns
 
