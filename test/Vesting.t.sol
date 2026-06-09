@@ -391,7 +391,7 @@ contract TestVesting is Test {
         vm.prank(owner);
         token.transfer(address(vestingShort), TOTAL_VESTING);
 
-        uint256 deployAt = block.timestamp;
+        uint256 deployAt = vestingShort.deployTime();
 
         // Before cliff
         vm.warp(deployAt + shortCliff - 1);

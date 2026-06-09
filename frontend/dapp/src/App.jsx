@@ -8,9 +8,13 @@ import BatchTransferView from "./views/BatchTransferView";
 import NFTMintView     from "./views/NFTMintView";
 import FaucetView      from "./views/FaucetView";
 import UniswapV2View   from "./views/UniswapV2View";
+import LendingMarketView from "./views/LendingMarketView";
+import StakingPoolView   from "./views/StakingPoolView";
 import "./App.css";
 
 const TABS = [
+  { key: "staking",   label: "🥩 Staking" },
+  { key: "lending",    label: "🏦 Lending" },
   { key: "uniswap",    label: "🦄 Uniswap V2" },
   { key: "faucet",     label: "🚰 Faucet" },
   { key: "tokenbank",  label: "🏦 TokenBank" },
@@ -22,7 +26,7 @@ const TABS = [
 
 export default function App() {
   const { account, signer, chainId, ethBalance, connecting, connect, disconnect } = useWallet();
-  const [activeTab, setActiveTab] = useState("uniswap");
+  const [activeTab, setActiveTab] = useState("staking");
 
   return (
     <div className="container">
@@ -47,12 +51,14 @@ export default function App() {
 
       {/* ── Main content ── */}
       <div className="main-content">
+        {activeTab === "staking"    && <StakingPoolView signer={signer} account={account} chainId={chainId} />}
         {activeTab === "faucet"     && <FaucetView      signer={signer} account={account} chainId={chainId} />}
         {activeTab === "nftmint"   && <NFTMintView   signer={signer} account={account} chainId={chainId} />}
         {activeTab === "tokenbank" && <TokenBankView signer={signer} account={account} chainId={chainId} />}
         {activeTab === "nftmarket" && <NFTMarketView signer={signer} account={account} chainId={chainId} />}
         {activeTab === "memefactory" && <MemeFactoryView signer={signer} account={account} chainId={chainId} />}
         {activeTab === "batchtransfer" && <BatchTransferView signer={signer} account={account} chainId={chainId} />}
+        {activeTab === "lending"    && <LendingMarketView signer={signer} account={account} chainId={chainId} />}
         {activeTab === "uniswap"    && <UniswapV2View signer={signer} account={account} chainId={chainId} />}
       </div>
     </div>

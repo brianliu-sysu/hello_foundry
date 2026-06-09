@@ -207,6 +207,42 @@ export const FAUCET_ABI = [
   ], anonymous: false },
 ];
 
+// ──────────────────────────────────────────
+// StakingPool ABI
+// ──────────────────────────────────────────
+export const STAKINGPOOL_ABI = [
+  { type: "function", name: "stake", inputs: [], outputs: [], stateMutability: "payable" },
+  { type: "function", name: "withdraw", inputs: [{ name: "stakeAmount", type: "uint256" }], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "claimReward", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "nonpayable" },
+  { type: "function", name: "setLendingMarket", inputs: [{ name: "_newMarket", type: "address" }], outputs: [], stateMutability: "nonpayable" },
+  // Views
+  { type: "function", name: "totalStaked", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "totalRewardsMinted", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "lastUpdateBlock", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "REWARD_PER_BLOCK", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "stakedBalance", inputs: [{ name: "user", type: "address" }], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "earned", inputs: [{ name: "user", type: "address" }], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "rewards", inputs: [{ name: "user", type: "address" }], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "getUserWETH", inputs: [{ name: "user", type: "address" }], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "getTotalInterestEarned", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "WETH", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  { type: "function", name: "KK", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  { type: "function", name: "lendingMarket", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  { type: "function", name: "owner", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  { type: "event", name: "Staked", inputs: [{ name: "user", type: "address", indexed: true }, { name: "ethAmount", type: "uint256", indexed: false }], anonymous: false },
+  { type: "event", name: "Withdrawn", inputs: [{ name: "user", type: "address", indexed: true }, { name: "ethAmount", type: "uint256", indexed: false }, { name: "stakeShare", type: "uint256", indexed: false }], anonymous: false },
+  { type: "event", name: "RewardClaimed", inputs: [{ name: "user", type: "address", indexed: true }, { name: "amount", type: "uint256", indexed: false }], anonymous: false },
+];
+
+// ──────────────────────────────────────────
+// KKToken ABI
+// ──────────────────────────────────────────
+export const KTKOKEN_ABI = [
+  { type: "function", name: "balanceOf", inputs: [{ name: "account", type: "address" }], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "symbol", inputs: [], outputs: [{ name: "", type: "string" }], stateMutability: "view" },
+  { type: "function", name: "decimals", inputs: [], outputs: [{ name: "", type: "uint8" }], stateMutability: "view" },
+];
+
 // ────────────────────────────────────
 // MemeFactory ABI
 // ────────────────────────────────────
@@ -232,6 +268,108 @@ export const MEMETOKEN_EXTRA_ABI = [
   { type: "function", name: "owner", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
   { type: "function", name: "name", inputs: [], outputs: [{ name: "", type: "string" }], stateMutability: "view" },
   { type: "function", name: "totalSupply", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+];
+
+// ──────────────────────────────────────────
+// LendingMarket ABI
+// ──────────────────────────────────────────
+export const LENDINGMARKET_ABI = [
+  { type: "function", name: "supply", inputs: [
+    { name: "asset", type: "address" }, { name: "amount", type: "uint256" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "withdraw", inputs: [
+    { name: "asset", type: "address" }, { name: "amount", type: "uint256" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "borrow", inputs: [
+    { name: "asset", type: "address" }, { name: "amount", type: "uint256" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "repay", inputs: [
+    { name: "asset", type: "address" }, { name: "amount", type: "uint256" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "setUserUseAsCollateral", inputs: [
+    { name: "asset", type: "address" }, { name: "useAsCollateral", type: "bool" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "flashLoan", inputs: [
+    { name: "receiverAddress", type: "address" }, { name: "asset", type: "address" },
+    { name: "amount", type: "uint256" }, { name: "params", type: "bytes" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "liquidate", inputs: [
+    { name: "collateralAsset", type: "address" }, { name: "debtAsset", type: "address" },
+    { name: "borrower", type: "address" }, { name: "debtToCover", type: "uint256" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  // views
+  { type: "function", name: "getReservesList", inputs: [], outputs: [{ name: "", type: "address[]" }], stateMutability: "view" },
+  { type: "function", name: "reserves", inputs: [{ name: "asset", type: "address" }], outputs: [
+    { name: "liquidityIndex", type: "uint256" }, { name: "borrowIndex", type: "uint256" },
+    { name: "totalLiquidity", type: "uint256" }, { name: "totalDebt", type: "uint256" },
+    { name: "lastUpdateTimestamp", type: "uint256" },
+    { name: "optimalUtilizationRate", type: "uint256" }, { name: "baseBorrowRate", type: "uint256" },
+    { name: "slope1", type: "uint256" }, { name: "slope2", type: "uint256" },
+    { name: "collateralFactor", type: "uint256" }, { name: "liquidationThreshold", type: "uint256" },
+    { name: "liquidationBonus", type: "uint256" }, { name: "flashLoanPremium", type: "uint256" },
+    { name: "price", type: "uint256" }, { name: "isActive", type: "bool" },
+  ], stateMutability: "view" },
+  { type: "function", name: "getUserAccountData", inputs: [{ name: "user", type: "address" }], outputs: [
+    { name: "totalCollateralUSD", type: "uint256" }, { name: "totalDebtUSD", type: "uint256" },
+    { name: "availableBorrowsUSD", type: "uint256" }, { name: "currentLiquidationThreshold", type: "uint256" },
+    { name: "ltv", type: "uint256" }, { name: "healthFactor", type: "uint256" },
+  ], stateMutability: "view" },
+  { type: "function", name: "getUserSupply", inputs: [
+    { name: "user", type: "address" }, { name: "asset", type: "address" },
+  ], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "getUserBorrow", inputs: [
+    { name: "user", type: "address" }, { name: "asset", type: "address" },
+  ], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "getCurrentBorrowRate", inputs: [
+    { name: "asset", type: "address" },
+  ], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "getCurrentSupplyRate", inputs: [
+    { name: "asset", type: "address" },
+  ], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "isUsingAsCollateral", inputs: [
+    { name: "user", type: "address" }, { name: "asset", type: "address" },
+  ], outputs: [{ name: "", type: "bool" }], stateMutability: "view" },
+  // Ownable
+  { type: "function", name: "owner", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  // Admin
+  { type: "function", name: "initReserve", inputs: [
+    { name: "asset", type: "address" },
+    { name: "collateralFactor", type: "uint256" }, { name: "liquidationThreshold", type: "uint256" },
+    { name: "liquidationBonus", type: "uint256" }, { name: "flashLoanPremium", type: "uint256" },
+    { name: "price", type: "uint256" },
+    { name: "optimalUtilizationRate", type: "uint256" }, { name: "baseBorrowRate", type: "uint256" },
+    { name: "slope1", type: "uint256" }, { name: "slope2", type: "uint256" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "setAssetPrice", inputs: [
+    { name: "asset", type: "address" }, { name: "price", type: "uint256" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "setCollateralFactor", inputs: [
+    { name: "asset", type: "address" }, { name: "cf", type: "uint256" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "setFlashLoanPremium", inputs: [
+    { name: "asset", type: "address" }, { name: "premium", type: "uint256" },
+  ], outputs: [], stateMutability: "nonpayable" },
+  // Events
+  { type: "event", name: "Supplied", inputs: [
+    { name: "user", type: "address", indexed: true },
+    { name: "asset", type: "address", indexed: true },
+    { name: "amount", type: "uint256", indexed: false },
+  ], anonymous: false },
+  { type: "event", name: "Withdrawn", inputs: [
+    { name: "user", type: "address", indexed: true },
+    { name: "asset", type: "address", indexed: true },
+    { name: "amount", type: "uint256", indexed: false },
+  ], anonymous: false },
+  { type: "event", name: "Borrowed", inputs: [
+    { name: "user", type: "address", indexed: true },
+    { name: "asset", type: "address", indexed: true },
+    { name: "amount", type: "uint256", indexed: false },
+  ], anonymous: false },
+  { type: "event", name: "Repaid", inputs: [
+    { name: "user", type: "address", indexed: true },
+    { name: "asset", type: "address", indexed: true },
+    { name: "amount", type: "uint256", indexed: false },
+  ], anonymous: false },
 ];
 
 // ────────────────────────────────────
@@ -453,6 +591,9 @@ export const FAUCET_DEPLOYED              = mergeAddress("Faucet");
 export const UNISWAPV2_FACTORY_DEPLOYED   = mergeAddress("UniswapV2Factory");
 export const UNISWAPV2_ROUTER_DEPLOYED    = mergeAddress("UniswapV2Router02");
 export const WETH9_DEPLOYED               = mergeAddress("WETH9");
+export const LENDINGMARKET_DEPLOYED        = mergeAddress("LendingMarket");
+export const STAKINGPOOL_DEPLOYED           = mergeAddress("StakingPool");
+export const KTKOKEN_DEPLOYED               = mergeAddress("KKToken");
 
 // ────────────────────────────────────
 // Utilities
