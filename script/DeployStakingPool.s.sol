@@ -3,8 +3,8 @@ pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
 import {console2} from "forge-std/console2.sol";
-import {KKToken} from "../src/KKToken.sol";
-import {StakingPool} from "../src/StakingPool.sol";
+import {KKToken} from "../src/staking/KKToken.sol";
+import {StakingPool} from "../src/staking/StakingPool.sol";
 
 /// @notice 部署 KKToken + StakingPool
 ///

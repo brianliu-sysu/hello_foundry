@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {Script} from "forge-std/Script.sol";
-import {NaiveFaucet} from "../src/NaiveFaucet.sol";
+import {NaiveFaucet} from "../src/token/NaiveFaucet.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract NaiveFaucetScript is Script {

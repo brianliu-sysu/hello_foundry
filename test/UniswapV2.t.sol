@@ -2,7 +2,7 @@
 pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
-import {BrianICOToken} from "../src/BrianICOToken.sol";
+import {BrianICOToken} from "../src/token/BrianICOToken.sol";
 import {UniswapV2Factory} from "../src/uniswap-v2/core/UniswapV2Factory.sol";
 import {UniswapV2Pair} from "../src/uniswap-v2/core/UniswapV2Pair.sol";
 import {UniswapV2Router02} from "../src/uniswap-v2/periphery/UniswapV2Router02.sol";

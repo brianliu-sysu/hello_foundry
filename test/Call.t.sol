@@ -2,7 +2,7 @@
 pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
-import {Caller, CalledContract, CalledLibrary} from "../src/Call.sol";
+import {Caller, CalledContract, CalledLibrary} from "../src/utils/Call.sol";
 
 contract CallerTest is Test {
     Caller public caller;

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
-import {Faucet, Token} from "../src/Token.sol";
+import {Faucet, Token} from "../src/token/Token.sol";
 
 contract TokenTest is Test {
     Faucet public parentFaucet;

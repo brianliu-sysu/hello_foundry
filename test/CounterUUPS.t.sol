@@ -3,8 +3,8 @@ pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import {CounterV1Upgradeable} from "../src/CounterV1Upgradeable.sol";
-import {CounterV2Upgradeable} from "../src/CounterV2Upgradeable.sol";
+import {CounterV1Upgradeable} from "../src/counter/CounterV1Upgradeable.sol";
+import {CounterV2Upgradeable} from "../src/counter/CounterV2Upgradeable.sol";
 
 contract CounterUUPSTest is Test {
     CounterV1Upgradeable public implV1;

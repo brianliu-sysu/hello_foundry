@@ -2,8 +2,8 @@
 pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
-import {BatchTransferDelegation} from "../src/BatchTransferDelegation.sol";
-import {BrianICOToken} from "../src/BrianICOToken.sol";
+import {BatchTransferDelegation} from "../src/delegation/BatchTransferDelegation.sol";
+import {BrianICOToken} from "../src/token/BrianICOToken.sol";
 
 contract BatchTransferDelegationTest is Test {
     BatchTransferDelegation public delegation;

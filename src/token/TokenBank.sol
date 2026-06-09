@@ -4,7 +4,7 @@ pragma solidity ^0.8.26;
 import {IERC1363Receiver} from "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
-import {ISignatureTransfer} from "./ISignatureTransfer.sol";
+import {ISignatureTransfer} from "../utils/ISignatureTransfer.sol";
 
 contract TokenBank is IERC1363Receiver {
     address private constant PERMIT2 = 0x000000000022D473030F116dDEE9F6B43aC78BA3;

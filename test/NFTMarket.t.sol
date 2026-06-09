@@ -2,9 +2,9 @@
 pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
-import {BrianNFT} from "../src/BrianNFT.sol";
-import {BrianICOToken} from "../src/BrianICOToken.sol";
-import {NFTMarket} from "../src/NFTMarket.sol";
+import {BrianNFT} from "../src/nft/BrianNFT.sol";
+import {BrianICOToken} from "../src/token/BrianICOToken.sol";
+import {NFTMarket} from "../src/nft/NFTMarket.sol";
 import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 contract NFTMarketTest is Test {

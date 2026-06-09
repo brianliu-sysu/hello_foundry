@@ -4,10 +4,10 @@ pragma solidity ^0.8.26;
 import {IFlashLoanSimpleReceiver} from "aave-v3-core/contracts/flashloan/interfaces/IFlashLoanSimpleReceiver.sol";
 import {IPoolAddressesProvider} from "aave-v3-core/contracts/interfaces/IPoolAddressesProvider.sol";
 import {IPool} from "aave-v3-core/contracts/interfaces/IPool.sol";
-import {IERC20} from "./uniswap-v2/periphery/interfaces/IERC20.sol";
+import {IERC20} from "../uniswap-v2/periphery/interfaces/IERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import {AdminWithdrawable} from "./shared/AdminWithdrawable.sol";
-import {UniswapV2Helper} from "./shared/UniswapV2Helper.sol";
+import {AdminWithdrawable} from "../shared/AdminWithdrawable.sol";
+import {UniswapV2Helper} from "../shared/UniswapV2Helper.sol";
 
 /// @title  AaveFlashArbitrage
 /// @notice 利用 Aave v3 Flash Loan 借款，在 Uniswap V2 上进行三角/多跳套利

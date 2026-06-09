@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
-import {BrianICOToken} from "../src/BrianICOToken.sol";
+import {BrianICOToken} from "../src/token/BrianICOToken.sol";
 
 contract BrianICOTokenScript is BaseScript {
     BrianICOToken public brianICOToken;

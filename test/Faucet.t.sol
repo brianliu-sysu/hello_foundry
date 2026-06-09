@@ -3,7 +3,7 @@ pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {Owner, Pausable, Faucet} from "../src/Faucet.sol";
+import {Owner, Pausable, Faucet} from "../src/token/Faucet.sol";
 
 /// @notice 简易 Mock ERC20，供 Faucet token 提款测试使用
 contract MockERC20 is IERC20 {

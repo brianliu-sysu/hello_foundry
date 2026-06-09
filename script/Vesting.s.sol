@@ -3,8 +3,8 @@ pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
 import {console2} from "forge-std/console2.sol";
-import {BrianICOToken} from "../src/BrianICOToken.sol";
-import {Vesting} from "../src/Vesting.sol";
+import {BrianICOToken} from "../src/token/BrianICOToken.sol";
+import {Vesting} from "../src/token/Vesting.sol";
 
 /// @notice 部署 Vesting 合约 + 配套 BrianICOToken，并向合约转入 100 万代币
 ///

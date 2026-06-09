@@ -2,9 +2,9 @@
 pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
-import {KKToken} from "../src/KKToken.sol";
-import {StakingPool} from "../src/StakingPool.sol";
-import {LendingMarket} from "../src/LendingMarket.sol";
+import {KKToken} from "../src/staking/KKToken.sol";
+import {StakingPool} from "../src/staking/StakingPool.sol";
+import {LendingMarket} from "../src/lending/LendingMarket.sol";
 import {WETH9} from "../src/uniswap-v2/periphery/WETH9.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 

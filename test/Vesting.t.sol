@@ -2,8 +2,8 @@
 pragma solidity ^0.8.26;
 
 import {Test, console} from "forge-std/Test.sol";
-import {BrianICOToken} from "../src/BrianICOToken.sol";
-import {Vesting} from "../src/Vesting.sol";
+import {BrianICOToken} from "../src/token/BrianICOToken.sol";
+import {Vesting} from "../src/token/Vesting.sol";
 
 contract TestVesting is Test {
     Vesting public vesting;

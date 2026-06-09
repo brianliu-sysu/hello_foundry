@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
-import {Permit2} from "../src/Permit2.sol";
+import {Permit2} from "../src/utils/Permit2.sol";
 
 /// @notice Deploy Permit2 contract.
 /// @dev    For local Anvil, use `vm.etch()` to place it at the canonical address

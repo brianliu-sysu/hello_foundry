@@ -2,8 +2,8 @@
 pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
-import {Counter} from "../src/Counter.sol";
-import {Proxy} from "../src/proxy.sol";
+import {Counter} from "../src/counter/Counter.sol";
+import {Proxy} from "../src/counter/proxy.sol";
 
 contract CounterV2 {
     uint256 public number;

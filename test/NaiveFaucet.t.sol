@@ -2,8 +2,8 @@
 pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
-import {NaiveFaucet} from "../src/NaiveFaucet.sol";
-import {BrianICOToken} from "../src/BrianICOToken.sol";
+import {NaiveFaucet} from "../src/token/NaiveFaucet.sol";
+import {BrianICOToken} from "../src/token/BrianICOToken.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract NaiveFaucetTest is Test {

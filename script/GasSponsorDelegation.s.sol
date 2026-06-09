@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
-import {GasSponsorDelegation} from "../src/GasSponsorDelegation.sol";
+import {GasSponsorDelegation} from "../src/delegation/GasSponsorDelegation.sol";
 
 contract GasSponsorDelegationScript is BaseScript {
     GasSponsorDelegation public delegation;

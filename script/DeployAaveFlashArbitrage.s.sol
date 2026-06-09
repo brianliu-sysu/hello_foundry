@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
 import {console2} from "forge-std/console2.sol";
-import {AaveFlashArbitrage} from "../src/AaveFlashArbitrage.sol";
+import {AaveFlashArbitrage} from "../src/arbitrage/AaveFlashArbitrage.sol";
 
 /// @notice 部署 AaveFlashArbitrage 合约
 ///

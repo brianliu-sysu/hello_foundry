@@ -2,8 +2,8 @@
 pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
-import {MemeToken} from "../src/MemeToken.sol";
-import {MemeFactory} from "../src/MemeFactory.sol";
+import {MemeToken} from "../src/meme/MemeToken.sol";
+import {MemeFactory} from "../src/meme/MemeFactory.sol";
 
 /// @notice Deploy MemeToken implementation + MemeFactory.
 /// @dev    需先部署模板，再传地址给工厂构造函数。

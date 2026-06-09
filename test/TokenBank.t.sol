@@ -2,9 +2,9 @@
 pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
-import {BrianICOToken} from "../src/BrianICOToken.sol";
-import {TokenBank} from "../src/TokenBank.sol";
-import {ISignatureTransfer} from "../src/ISignatureTransfer.sol";
+import {BrianICOToken} from "../src/token/BrianICOToken.sol";
+import {TokenBank} from "../src/token/TokenBank.sol";
+import {ISignatureTransfer} from "../src/utils/ISignatureTransfer.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 

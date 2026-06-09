@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
-import {BrianNFT} from "../src/BrianNFT.sol";
+import {BrianNFT} from "../src/nft/BrianNFT.sol";
 
 contract BrianNFTScript is BaseScript {
     BrianNFT public brianNft;

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
-import {Faucet} from "../src/Faucet.sol";
+import {Faucet} from "../src/token/Faucet.sol";
 
 contract FaucetScript is BaseScript {
     Faucet public faucet;

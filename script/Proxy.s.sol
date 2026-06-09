@@ -2,8 +2,8 @@
 pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
-import {Proxy} from "../src/proxy.sol";
-import {Counter} from "../src/Counter.sol";
+import {Proxy} from "../src/counter/proxy.sol";
+import {Counter} from "../src/counter/Counter.sol";
 
 contract ProxyScript is BaseScript {
     Proxy public proxy;

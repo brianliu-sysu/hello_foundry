@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
-import {BatchTransferDelegation} from "../src/BatchTransferDelegation.sol";
+import {BatchTransferDelegation} from "../src/delegation/BatchTransferDelegation.sol";
 
 contract BatchTransferDelegationScript is BaseScript {
     BatchTransferDelegation public delegation;

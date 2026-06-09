@@ -2,7 +2,7 @@
 pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
-import {BrianNFT} from "../src/BrianNFT.sol";
+import {BrianNFT} from "../src/nft/BrianNFT.sol";
 import {IERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 contract BrianNFTTest is Test {

@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
 import {console2} from "forge-std/console2.sol";
-import {LendingMarket} from "../src/LendingMarket.sol";
+import {LendingMarket} from "../src/lending/LendingMarket.sol";
 
 /// @notice 部署 LendingMarket 合约并初始化 WETH 作为首个准备金资产
 ///

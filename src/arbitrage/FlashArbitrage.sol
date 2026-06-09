@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.26;
 
-import {IUniswapV2Callee} from "./uniswap-v2/core/interfaces/IUniswapV2Callee.sol";
-import {IUniswapV2Pair} from "./uniswap-v2/core/interfaces/IUniswapV2Pair.sol";
+import {IUniswapV2Callee} from "../uniswap-v2/core/interfaces/IUniswapV2Callee.sol";
+import {IUniswapV2Pair} from "../uniswap-v2/core/interfaces/IUniswapV2Pair.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import {AdminWithdrawable} from "./shared/AdminWithdrawable.sol";
-import {UniswapV2Helper} from "./shared/UniswapV2Helper.sol";
+import {AdminWithdrawable} from "../shared/AdminWithdrawable.sol";
+import {UniswapV2Helper} from "../shared/UniswapV2Helper.sol";
 
 /// @title  FlashArbitrage
 /// @notice 利用 Uniswap V2 Flash Swap 进行多跳路径套利

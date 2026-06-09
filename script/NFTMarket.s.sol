@@ -2,9 +2,9 @@
 pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
-import {BrianNFT} from "../src/BrianNFT.sol";
-import {BrianICOToken} from "../src/BrianICOToken.sol";
-import {NFTMarket} from "../src/NFTMarket.sol";
+import {BrianNFT} from "../src/nft/BrianNFT.sol";
+import {BrianICOToken} from "../src/token/BrianICOToken.sol";
+import {NFTMarket} from "../src/nft/NFTMarket.sol";
 
 /// @notice 一键部署 BrianNFT、BrianICOToken 和 NFTMarket
 contract NFTMarketScript is BaseScript {

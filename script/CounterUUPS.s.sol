@@ -3,8 +3,8 @@ pragma solidity ^0.8.13;
 
 import {BaseScript} from "./BaseScript.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import {CounterV1Upgradeable} from "../src/CounterV1Upgradeable.sol";
-import {CounterV2Upgradeable} from "../src/CounterV2Upgradeable.sol";
+import {CounterV1Upgradeable} from "../src/counter/CounterV1Upgradeable.sol";
+import {CounterV2Upgradeable} from "../src/counter/CounterV2Upgradeable.sol";
 
 /// @notice 部署+升级 UUPS Counter 的脚本
 ///         首次部署: forge script script/CounterUUPS.s.sol --sig "run()"

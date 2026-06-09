@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {Script} from "forge-std/Script.sol";
-import {CalledContract, Caller} from "../src/Call.sol";
+import {CalledContract, Caller} from "../src/utils/Call.sol";
 
 contract CallScript is Script {
     CalledContract public calledContract;

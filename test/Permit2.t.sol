@@ -2,10 +2,10 @@
 pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
-import {BrianICOToken} from "../src/BrianICOToken.sol";
-import {TokenBank} from "../src/TokenBank.sol";
-import {Permit2} from "../src/Permit2.sol";
-import {ISignatureTransfer} from "../src/ISignatureTransfer.sol";
+import {BrianICOToken} from "../src/token/BrianICOToken.sol";
+import {TokenBank} from "../src/token/TokenBank.sol";
+import {Permit2} from "../src/utils/Permit2.sol";
+import {ISignatureTransfer} from "../src/utils/ISignatureTransfer.sol";
 
 contract Permit2Test is Test {
     BrianICOToken public token;
