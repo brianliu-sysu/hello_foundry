@@ -13,6 +13,7 @@
 | **代币分发** | 线性释放（Vesting）、MemeFactory 一键发币、StakingPool 质押挖矿 |
 | **DeFi 借贷** | LendingMarket（多资产 Compound 风格）、超额抵押借款、清算、闪电贷 |
 | **闪电贷套利** | Uniswap V2 Flash Swap 套利、Aave v3 Flash Loan 套利、三角路径 Bot |
+| **杠杆交易** | 基于 vAMM (x*y=k) 的链上永续合约 — Long/Short/清算 |
 | **DEX 基础设施** | 自实现 Uniswap V2（Factory/Pair/Router/WETH + 全套接口） |
 | **合约委托** | GasSponsorDelegation（代付 Gas）、BatchTransferDelegation（EIP-7702） |
 | **代理模式** | UUPS Upgradeable（Counter V1 → V2 升级）、手动 Proxy |
@@ -35,6 +36,12 @@
 |------|------|
 | `FlashArbitrage.sol` | Uniswap V2 Flash Swap 三角套利（借 A 还 B，多跳路径） |
 | `AaveFlashArbitrage.sol` | Aave v3 Flash Loan → Uniswap V2 套利（借 A 还 A 闭环，0.09% 费率） |
+
+### 杠杆交易（vAMM）
+
+| 合约 | 说明 |
+|------|------|
+| `LeveragedDEX.sol` | vAMM 杠杆 DEX — 开仓（Long/Short 2–10x）、平仓、清算（维持保证金 6.25%）、ETH 抵押 |
 
 ### Uniswap V2（自实现，pragma ^0.8.0）
 
@@ -109,6 +116,7 @@
 
 ```
 src/
+├── dex/            LeveragedDEX （vAMM 杠杆交易）
 ├── arbitrage/     FlashArbitrage, AaveFlashArbitrage
 ├── lending/       LendingMarket
 ├── staking/       StakingPool, KKToken
@@ -130,6 +138,27 @@ src/
 - **Aave v3 Core** — 闪电贷接口
 - **React + ethers v6** — 前端 DApp
 
+## 🌐 Frontend Architecture
+
+```
+frontend/dapp/src/
+├── hooks/
+│   ├── useWallet.js         # MetaMask connection
+│   ├── useLendingMarket.js  # LendingMarket contract hook
+│   ├── useStakingPool.js    # StakingPool contract hook
+│   ├── useLeveragedDEX.js   # LeveragedDEX contract hook
+│   └── useUniswapV2.js      # Uniswap V2 hook
+├── views/
+│   ├── LeveragedDEXView.jsx  # vAMM Pool / Open / Close / Liquidate
+│   ├── LendingMarketView.jsx  # Supply/Borrow/FlashLoan/Dashboard/Admin
+│   ├── StakingPoolView.jsx    # Stake/Withdraw/Claim KK
+│   └── UniswapV2View.jsx      # AddLiquidity/RemoveLiquidity/Swap
+├── utils/
+│   └── contract.js          # ABIs + mergeAddress (deploy fallback)
+├── config.js                # Manual contract address overrides
+└── App.jsx                  # Tab navigation
+```
+
 ## 快速开始
 
 ### 构建
@@ -141,7 +170,7 @@ forge build
 ### 测试
 
 ```shell
-forge test          # 424 个测试
+forge test          # 448 个测试
 forge test -vvv     # 详细输出
 ```
 
@@ -163,6 +192,9 @@ forge script script/DeployFlashArbitrage.s.sol --rpc-url <RPC> --broadcast
 # AaveFlashArbitrage（需 Aave v3 PoolAddressesProvider）
 AAVE_POOL_ADDRESSES_PROVIDER=0x... \
   forge script script/DeployAaveFlashArbitrage.s.sol --rpc-url <RPC> --broadcast
+
+# LeveragedDEX
+forge script script/DeployLeveragedDEX.s.sol --rpc-url <RPC> --broadcast
 
 # DeflationaryToken
 forge script script/DeployDeflationaryToken.s.sol --rpc-url <RPC> --broadcast

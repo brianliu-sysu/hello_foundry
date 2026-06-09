@@ -243,6 +243,41 @@ export const KTKOKEN_ABI = [
   { type: "function", name: "decimals", inputs: [], outputs: [{ name: "", type: "uint8" }], stateMutability: "view" },
 ];
 
+// ──────────────────────────────────────────
+// LeveragedDEX ABI
+// ──────────────────────────────────────────
+export const LEVERAGEDDEX_ABI = [
+  { type: "function", name: "openPosition", inputs: [{ name: "leverage", type: "uint256" }, { name: "isLong", type: "bool" }], outputs: [{ name: "positionId", type: "uint256" }], stateMutability: "payable" },
+  { type: "function", name: "closePosition", inputs: [{ name: "positionId", type: "uint256" }], outputs: [{ name: "returnedETH", type: "uint256" }], stateMutability: "nonpayable" },
+  { type: "function", name: "liquidate", inputs: [{ name: "positionId", type: "uint256" }], outputs: [{ name: "bonusETH", type: "uint256" }], stateMutability: "nonpayable" },
+  { type: "function", name: "isLiquidatable", inputs: [{ name: "positionId", type: "uint256" }], outputs: [{ name: "", type: "bool" }], stateMutability: "view" },
+  { type: "function", name: "getUnrealizedPnL", inputs: [{ name: "positionId", type: "uint256" }], outputs: [{ name: "pnlETH", type: "int256" }], stateMutability: "view" },
+  { type: "function", name: "getMarkPrice", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "getUserPositions", inputs: [{ name: "user", type: "address" }], outputs: [{ name: "", type: "uint256[]" }], stateMutability: "view" },
+  { type: "function", name: "vBase", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "vQuote", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "nextPositionId", inputs: [], outputs: [{ name: "", type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "positions", inputs: [{ name: "", type: "uint256" }], outputs: [
+    { name: "trader", type: "address" }, { name: "collateral", type: "uint256" }, { name: "size", type: "uint256" },
+    { name: "notional", type: "uint256" }, { name: "leverage", type: "uint256" }, { name: "isLong", type: "bool" }, { name: "isOpen", type: "bool" },
+  ], stateMutability: "view" },
+  { type: "function", name: "owner", inputs: [], outputs: [{ name: "", type: "address" }], stateMutability: "view" },
+  { type: "event", name: "PositionOpened", inputs: [
+    { name: "id", type: "uint256", indexed: true }, { name: "trader", type: "address", indexed: true },
+    { name: "isLong", type: "bool", indexed: false }, { name: "size", type: "uint256", indexed: false },
+    { name: "collateral", type: "uint256", indexed: false }, { name: "entryNotional", type: "uint256", indexed: false },
+    { name: "leverage", type: "uint256", indexed: false },
+  ], anonymous: false },
+  { type: "event", name: "PositionClosed", inputs: [
+    { name: "id", type: "uint256", indexed: true }, { name: "trader", type: "address", indexed: true },
+    { name: "pnlETH", type: "uint256", indexed: false }, { name: "returnedETH", type: "uint256", indexed: false },
+  ], anonymous: false },
+  { type: "event", name: "Liquidated", inputs: [
+    { name: "id", type: "uint256", indexed: true }, { name: "liquidator", type: "address", indexed: true },
+    { name: "bonusETH", type: "uint256", indexed: false },
+  ], anonymous: false },
+];
+
 // ────────────────────────────────────
 // MemeFactory ABI
 // ────────────────────────────────────
@@ -594,6 +629,7 @@ export const WETH9_DEPLOYED               = mergeAddress("WETH9");
 export const LENDINGMARKET_DEPLOYED        = mergeAddress("LendingMarket");
 export const STAKINGPOOL_DEPLOYED           = mergeAddress("StakingPool");
 export const KTKOKEN_DEPLOYED               = mergeAddress("KKToken");
+export const LEVERAGEDDEX_DEPLOYED           = mergeAddress("LeveragedDEX");
 
 // ────────────────────────────────────
 // Utilities

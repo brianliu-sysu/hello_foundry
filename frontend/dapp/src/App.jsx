@@ -10,9 +10,11 @@ import FaucetView      from "./views/FaucetView";
 import UniswapV2View   from "./views/UniswapV2View";
 import LendingMarketView from "./views/LendingMarketView";
 import StakingPoolView   from "./views/StakingPoolView";
+import LeveragedDEXView  from "./views/LeveragedDEXView";
 import "./App.css";
 
 const TABS = [
+  { key: "leveraged",  label: "📈 Leveraged" },
   { key: "staking",   label: "🥩 Staking" },
   { key: "lending",    label: "🏦 Lending" },
   { key: "uniswap",    label: "🦄 Uniswap V2" },
@@ -26,7 +28,7 @@ const TABS = [
 
 export default function App() {
   const { account, signer, chainId, ethBalance, connecting, connect, disconnect } = useWallet();
-  const [activeTab, setActiveTab] = useState("staking");
+  const [activeTab, setActiveTab] = useState("leveraged");
 
   return (
     <div className="container">
@@ -51,6 +53,7 @@ export default function App() {
 
       {/* ── Main content ── */}
       <div className="main-content">
+        {activeTab === "leveraged"  && <LeveragedDEXView signer={signer} account={account} chainId={chainId} />}
         {activeTab === "staking"    && <StakingPoolView signer={signer} account={account} chainId={chainId} />}
         {activeTab === "faucet"     && <FaucetView      signer={signer} account={account} chainId={chainId} />}
         {activeTab === "nftmint"   && <NFTMintView   signer={signer} account={account} chainId={chainId} />}
